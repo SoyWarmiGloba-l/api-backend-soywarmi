@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\TeamController;
 use Illuminate\Http\Request;
@@ -24,4 +25,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('api')->prefix('v1')->group(function () {
     Route::resource('teams', TeamController::class);
     Route::resource('people', PersonController::class);
+    Route::resource('doctors', DoctorController::class);
 });
