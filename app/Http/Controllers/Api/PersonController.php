@@ -16,7 +16,7 @@ class PersonController extends Controller
     public function index()
     {
         try {
-            return responseJSON(Person::with('doctor', 'team')->get(), 200, 'Success');
+            return responseJSON(Person::with('doctor', 'team', 'role')->get(), 200, 'Success');
         } catch (\Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
@@ -30,7 +30,7 @@ class PersonController extends Controller
         try {
             $url = Storage::disk('public')->put($request->image->getClientOriginalName(), $request->image);
             $request->merge([
-                'photo' => env('APP_URL').'/storage/'.$url,
+                'photo' => env('APP_URL') . '/storage/' . $url,
                 'password' => Hash::make($request->password),
             ]);
             $person = Person::create($request->except('image'));
@@ -47,7 +47,7 @@ class PersonController extends Controller
     public function show(Person $person)
     {
         try {
-            return responseJSON($person->load('doctor', 'team'), 200, 'Success');
+            return responseJSON($person->load('doctor', 'team', 'role'), 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, $e->getMessage(), 500);
         }
@@ -62,7 +62,7 @@ class PersonController extends Controller
             if (isset($request->image)) {
                 $url = Storage::disk('public')->put($request->image->getClientOriginalName(), $request->image);
                 $request->merge([
-                    'photo' => env('APP_URL').'/storage/'.$url,
+                    'photo' => env('APP_URL') . '/storage/' . $url,
                 ]);
             }
             if (isset($request->password)) {

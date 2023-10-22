@@ -17,4 +17,9 @@ class Role extends Model
     {
         return $this->hasMany(Team::class);
     }
+
+    public function people(): HasMany
+    {
+        return $this->hasMany(Person::class);
+    }
 }
