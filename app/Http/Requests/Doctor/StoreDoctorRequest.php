@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Person;
+namespace App\Http\Requests\Doctor;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StorePersonRequest extends FormRequest
+class StoreDoctorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,15 +29,9 @@ class StorePersonRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'team_id' => 'required|exists:teams,id',
-            'role_id' => 'required|exists:roles,id',
-            'name' => 'required|string',
-            'lastname' => 'required|string',
-            'email' => 'required|email',
-            'password' => 'required|string',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'birthday' => 'required|date',
-            'phone' => 'required|string',
+            'person_id' => 'required|integer|exists:people,id',
+            'speciality' => 'required|string',
+            'degree_place' => 'required|string',
         ];
     }
 }
