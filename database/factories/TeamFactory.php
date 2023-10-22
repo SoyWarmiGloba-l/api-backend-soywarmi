@@ -24,7 +24,7 @@ class TeamFactory extends Factory
                 'facebook' => $this->faker->url(),
                 'twitter' => $this->faker->url(),
                 'instagram' => $this->faker->url(),
-            ]
+            ],
         ];
     }
 }

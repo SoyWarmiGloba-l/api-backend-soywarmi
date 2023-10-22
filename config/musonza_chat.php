@@ -33,17 +33,17 @@ return [
      */
     'routes' => [
         'path_prefix' => 'chat',
-        'middleware'  => ['web'],
+        'middleware' => ['web'],
     ],
 
     /*
      * Default values for pagination
      */
     'pagination' => [
-        'page'     => 1,
-        'perPage'  => 25,
-        'sorting'  => 'asc',
-        'columns'  => ['*'],
+        'page' => 1,
+        'perPage' => 25,
+        'sorting' => 'asc',
+        'columns' => ['*'],
         'pageName' => 'page',
     ],
 
@@ -52,7 +52,7 @@ return [
      */
     'transformers' => [
         'conversation' => null,
-        'message'      => null,
-        'participant'  => null,
+        'message' => null,
+        'participant' => null,
     ],
 ];
