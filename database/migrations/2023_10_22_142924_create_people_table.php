@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('photo');
             $table->date('birthday');
+            $table->string('gender');
             $table->integer('phone');
             $table->timestamps();
             $table->softDeletes();
