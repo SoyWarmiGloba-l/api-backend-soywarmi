@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\TeamController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,4 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Route group with middleware and prefinx
 Route::middleware('api')->prefix('v1')->group(function () {
     Route::resource('teams', TeamController::class);
+    Route::resource('people', PersonController::class);
 });
