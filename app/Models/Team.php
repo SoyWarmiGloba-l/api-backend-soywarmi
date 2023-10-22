@@ -18,4 +18,13 @@ class Team extends Model
     {
         return $this->hasOne(Person::class);
     }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    protected $casts = [
+        'social_networks' => 'json',
+    ];
 }
