@@ -14,6 +14,15 @@ class Person extends Model
 
     protected $guarded = [];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+    ];
+
     public function doctor(): HasOne
     {
         return $this->hasOne(Doctor::class);
