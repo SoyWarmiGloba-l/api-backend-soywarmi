@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('personas', function (Blueprint $table) {
+        Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 30);
-            $table->string('apellido_mat', 30);
-            $table->string('apellido_pat', 30);
+            $table->foreignId('team_id')->constrained('teams');
+            $table->foreignId('role_id')->constrained('roles');
+            $table->string('name', 30);
+            $table->string('lastname', 30);
+            $table->string('mother_lastname', 30)->nullable();
             $table->string('email', 50);
             $table->string('password');
-            $table->string('foto');
-            $table->dateTime('fecha_nacimiento');
-            $table->integer('telefono');
+            $table->string('photo');
+            $table->date('birthday');
+            $table->integer('phone');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('personas');
+        Schema::dropIfExists('people');
     }
 };
