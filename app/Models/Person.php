@@ -32,4 +32,9 @@ class Person extends Model
     {
         return $this->belongsTo(Team::class);
     }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
 }
