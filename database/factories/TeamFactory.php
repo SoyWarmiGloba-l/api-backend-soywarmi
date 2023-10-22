@@ -20,11 +20,11 @@ class TeamFactory extends Factory
             'role_id' => $this->faker->randomElement(\App\Models\Role::all()->pluck('id')->toArray()),
             'name' => $this->faker->colorName(),
             'description' => $this->faker->sentence(6),
-            'social_networks' => json_encode([
+            'social_networks' => [
                 'facebook' => $this->faker->url(),
                 'twitter' => $this->faker->url(),
                 'instagram' => $this->faker->url(),
-            ])
+            ],
         ];
     }
 }
