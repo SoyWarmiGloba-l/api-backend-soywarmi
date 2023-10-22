@@ -47,10 +47,10 @@ class StoreTeamRequest extends FormRequest
     protected function passedValidation()
     {
         $this->replace([
-            "role_id" => $this->role_id,
-            "name" => $this->name,
-            "description" => $this->description,
-            "social_networks" => json_encode($this->social_networks)
+            'role_id' => $this->role_id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'social_networks' => json_encode($this->social_networks),
         ]);
     }
 }

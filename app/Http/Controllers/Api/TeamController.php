@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Team;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Team\StoreTeamRequest;
+use App\Models\Team;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class TeamController extends Controller
 {
@@ -29,6 +29,7 @@ class TeamController extends Controller
     {
         try {
             $team = Team::create($request->validated());
+
             return responseJSON($team, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());
@@ -56,6 +57,7 @@ class TeamController extends Controller
     {
         try {
             $team->update($request->all());
+
             return responseJSON($team, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());
@@ -69,6 +71,7 @@ class TeamController extends Controller
     {
         try {
             $team->delete();
+
             return responseJSON($team, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());
