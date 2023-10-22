@@ -38,6 +38,7 @@ class StorePersonRequest extends FormRequest
             'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'birthday' => 'required|date',
             'phone' => 'required|string',
+            'gender' => 'required|string'
         ];
     }
 }
