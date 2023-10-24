@@ -8,8 +8,9 @@
 </p>
 
 ## Requirements
-1. Have installed Wampp, Xampp, Laragon u others.
-2. Have installed Composer
+
+1. Have Wampp, Xampp, Laragon u others installed.
+2. Have Composer installed.
 
 ## Clone Repository
 
