@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\MedicalCenterController;
+use App\Http\Controllers\Api\MedicalServiceController;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\TeamController;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('people', PersonController::class);
     Route::resource('doctors', DoctorController::class);
     Route::resource('medical_centers', MedicalCenterController::class);
+    Route::resource('medical_services', MedicalServiceController::class);
 });
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::group([

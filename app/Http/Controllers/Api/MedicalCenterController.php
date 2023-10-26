@@ -69,6 +69,7 @@ class MedicalCenterController extends Controller
     public function destroy(MedicalCenter $medicalCenter)
     {
         try {
+            $medicalCenter->medicalServices()->detach();
             $medicalCenter->delete();
             return responseJSON(null, 200, 'Success');
         } catch (\Exception $e) {
