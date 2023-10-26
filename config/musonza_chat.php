@@ -32,8 +32,8 @@ return [
      * Routes configuration
      */
     'routes' => [
-        'path_prefix' => 'chat',
-        'middleware' => ['web'],
+        'path_prefix' => 'api/v1/chat',
+        'middleware' => ['auth:api'],
     ],
 
     /*
@@ -51,8 +51,8 @@ return [
      * Model Transformers
      */
     'transformers' => [
-        'conversation' => null,
-        'message' => null,
-        'participant' => null,
+        'conversation' => \App\Transformers\ConversationTransformer::class,
+        'message' => \App\Transformers\MessageTransformer::class,
+        'participant' => \App\Transformers\ParticipantTransformer::class,
     ],
 ];
