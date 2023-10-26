@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medical_centers', function (Blueprint $table) {
+        Schema::create('medical_services', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->string('address');
-            $table->string('latitude');
-            $table->string('longitude');
-            $table->dateTime('opening_datetime');
-            $table->dateTime('closing_datetime');
-            $table->string('phones');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medical_centers');
+        Schema::dropIfExists('medical_services');
     }
 };
