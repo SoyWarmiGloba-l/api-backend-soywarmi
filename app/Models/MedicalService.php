@@ -16,6 +16,6 @@ class MedicalService extends Model
 
     public function medicalCenters(): BelongsToMany
     {
-        return $this->belongsToMany(MedicalCenter::class, 'center_services', 'center_id', 'service_id');
+        return $this->belongsToMany(MedicalCenter::class, 'center_services', 'service_id', 'center_id');
     }
 }
