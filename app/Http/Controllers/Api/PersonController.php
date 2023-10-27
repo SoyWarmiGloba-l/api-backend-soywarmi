@@ -30,7 +30,7 @@ class PersonController extends Controller
         try {
             $url = Storage::disk('public')->put($request->image->getClientOriginalName(), $request->image);
             $request->merge([
-                'photo' => env('APP_URL') . '/storage/' . $url,
+                'photo' => env('APP_URL').'/storage/'.$url,
                 'password' => Hash::make($request->password),
             ]);
             $person = Person::create($request->except('image'));
@@ -62,7 +62,7 @@ class PersonController extends Controller
             if (isset($request->image)) {
                 $url = Storage::disk('public')->put($request->image->getClientOriginalName(), $request->image);
                 $request->merge([
-                    'photo' => env('APP_URL') . '/storage/' . $url,
+                    'photo' => env('APP_URL').'/storage/'.$url,
                 ]);
             }
             if (isset($request->password)) {

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MedicalCenter\StoreMedicalCenterRequest;
 use App\Models\MedicalCenter;
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class MedicalCenterController extends Controller
 {
@@ -28,6 +28,7 @@ class MedicalCenterController extends Controller
             if (isset($request->service_id)) {
                 $medicalCenter->medicalServices()->attach($request->service_id);
             }
+
             return responseJSON($medicalCenter, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());
@@ -46,6 +47,7 @@ class MedicalCenterController extends Controller
 
                 return responseJSON(null, 404, 'Medical Center not found');
             }
+
             return responseJSON(null, 500, $e->getMessage());
         }
     }
@@ -57,6 +59,7 @@ class MedicalCenterController extends Controller
     {
         try {
             $medicalCenter->update($request->all());
+
             return responseJSON($medicalCenter, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());
@@ -71,6 +74,7 @@ class MedicalCenterController extends Controller
         try {
             $medicalCenter->medicalServices()->detach();
             $medicalCenter->delete();
+
             return responseJSON(null, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());

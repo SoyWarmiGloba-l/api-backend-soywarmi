@@ -1,14 +1,15 @@
 <?php
 
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\MedicalCenterController;
 use App\Http\Controllers\Api\MedicalServiceController;
 use App\Http\Controllers\Api\PersonController;
+use App\Http\Controllers\Api\PublicationController;
 use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,12 +33,14 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('doctors', DoctorController::class);
     Route::resource('medical_centers', MedicalCenterController::class);
     Route::resource('medical_services', MedicalServiceController::class);
+    Route::resource('publications', PublicationController::class);
+    Route::resource('comments', CommentController::class);
 });
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::group([
 
     'middleware' => 'api',
-    'prefix' => 'auth'
+    'prefix' => 'auth',
 
 ], function ($router) {
 
