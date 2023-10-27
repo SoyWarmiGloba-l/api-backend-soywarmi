@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\MedicalCenter;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreMedicalCenterRequest extends FormRequest
 {
@@ -12,6 +14,11 @@ class StoreMedicalCenterRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(responseJSON($validator->errors(), 422, $validator->errors()->first()));
     }
 
     /**

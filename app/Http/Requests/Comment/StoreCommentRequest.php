@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\MedicalService;
+namespace App\Http\Requests\Comment;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreMedicalServiceRequest extends FormRequest
+class StoreCommentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,8 +29,10 @@ class StoreMedicalServiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'description' => 'required|string',
+            'person_id' => 'required|exists:people,id',
+            'publication_id' => 'required|exists:publications,id',
+            'content' => 'required|string',
+            'state' => 'required|string',
         ];
     }
 }

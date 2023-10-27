@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\MedicalCenter;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MedicalCenterSeeder extends Seeder
