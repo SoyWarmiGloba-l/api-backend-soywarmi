@@ -28,7 +28,7 @@ class PersonFactory extends Factory
             'photo' => 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
             'birthday' => $this->faker->date(),
             'phone' => 123456,
-            'gender' => $this->faker->randomElement(['Masculino', 'Femenino', 'No especificado'])
+            'gender' => $this->faker->randomElement(['Masculino', 'Femenino', 'No especificado']),
         ];
     }
 }

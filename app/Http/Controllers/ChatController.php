@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
-use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
@@ -11,6 +10,7 @@ class ChatController extends Controller
     {
         $persona = Person::where('id', 2)->first();
         dd($persona->getParticipantDetailsAttribute());
+
         return responseJSON($persona->getParticipantDetailsAttribute(), 200, 'ok');
     }
 }

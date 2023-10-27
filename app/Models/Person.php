@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Musonza\Chat\Traits\Messageable;
 
-
 class Person extends Model
 {
-    use HasFactory, SoftDeletes, Messageable;
+    use HasFactory, Messageable, SoftDeletes;
 
     protected $guarded = [];
-
 
     /* protected $table = 'people'; */
 
@@ -41,6 +40,16 @@ class Person extends Model
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function publications(): HasMany
+    {
+        return $this->hasMany(Publication::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 
     public function getParticipantDetailsAttribute()
