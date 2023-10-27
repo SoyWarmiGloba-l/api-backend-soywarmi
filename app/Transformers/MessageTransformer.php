@@ -6,7 +6,6 @@ use Musonza\Chat\Transformers\Transformer;
 
 class MessageTransformer extends Transformer
 {
-
     public function transform($message)
     {
         return [

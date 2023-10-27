@@ -27,6 +27,7 @@ class MedicalServiceController extends Controller
             if ($request->has('center_id')) {
                 $medicalService->medicalCenters()->attach($request->center_id);
             }
+
             return responseJSON($medicalService, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());
@@ -52,6 +53,7 @@ class MedicalServiceController extends Controller
     {
         try {
             $medicalService->update($request->all());
+
             return responseJSON($medicalService, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());
@@ -66,6 +68,7 @@ class MedicalServiceController extends Controller
         try {
             $medicalService->medicalCenters()->detach();
             $medicalService->delete();
+
             return responseJSON(null, 200, 'Success');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());
