@@ -76,5 +76,6 @@
             @yield('content')
         </main>
     </div>
+    {!! Toastr::message() !!}
 </body>
 </html>
