@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Web\ResourceController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,9 +18,12 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::group(['middleware' => ['auth'], 'prefix' => 'admin'], function () {
-    Route::get('/resource', function () {
-        return view('admin.resource_admin');
-    })->name('resource');
+Route::group(['middleware' => 'web'], function () {
+
+    Route::group(['middleware' => ['auth'], 'prefix' => 'admin'], function () {
+        Route::post('/resource/save', [ResourceController::class, 'saveResource'])->name('resource.save');
+        Route::get('/resource', [ResourceController::class, 'index'])->name('resource');
+        Route::get('/resource/{resource}', [ResourceController::class, 'deleteResource'])->name('resource.delete');
+    });
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

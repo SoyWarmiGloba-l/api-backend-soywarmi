@@ -7,63 +7,72 @@
 @stop
 @section('plugins.KrajeeFileinput', true)
 @section('content')
+    @if(session()->has('success'))
+        <x-adminlte-alert theme="success" title="Success">
+            {{ session()->get('success') }}
+        </x-adminlte-alert>
+    @endif
 <x-adminlte-card theme="maroon" theme-mode="outline">
-    <div class="container">
-        <div class="row">
-            <div class="col-4">
-                <h4>Subir Recurso -></h4>
+    <form action="{{ route('resource.save') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="name">Nombre</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="name">Tipo (word, power point, etc.</label>
+                        <input type="text" class="form-control" id="name" name="type" placeholder="Tipo documento" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="name">Descripcion</label>
+                        <textarea class="form-control" id="name" name="description" placeholder="Descripcion...." required></textarea>
+                    </div>
+                </div>
             </div>
-            <div class="col-4">
-
+            <div class="row">
+                <div class="col">
+                    {{-- With a label, some plugin config, and error feedback disabled --}}
+                    {{-- ['image', 'html', 'text', 'video', 'audio', 'flash', 'object'] --}}
+                    @php
+                        $config = [
+                        'allowedFileTypes' => ['text', 'office', 'pdf', 'doc', 'docx', 'image', 'video'],
+                        'browseOnZoneClick' => true,
+                        'theme' => 'explorer-fa5',
+                        ];
+                    @endphp
+                    <x-adminlte-input-file-krajee name="file" label="Subir elemento"
+                                                  data-msg-placeholder="Choose a text, office or pdf file..." label-class="text-primary"
+                                                  :config="$config" />
+                </div>
             </div>
-            <div class="col-4">
-                <button type="button" class="btn btn-outline-danger btn-block">Subir</button>
+            <div class="row">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-outline-danger btn-block">Subir</button>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                {{-- With a label, some plugin config, and error feedback disabled --}}
-                {{-- ['image', 'html', 'text', 'video', 'audio', 'flash', 'object'] --}}
-                @php
-                $config = [
-                'allowedFileTypes' => ['text', 'office', 'pdf', 'doc', 'docx', 'image'],
-                'browseOnZoneClick' => true,
-                'theme' => 'explorer-fa5',
-                ];
-                @endphp
-                <x-adminlte-input-file-krajee name="kifLabel" label="Upload document file"
-                    data-msg-placeholder="Choose a text, office or pdf file..." label-class="text-primary"
-                    :config="$config" />
-            </div>
-        </div>
-    </div>
+    </form>
 </x-adminlte-card>
 <x-adminlte-card theme="maroon" theme-mode="outline">
     {{-- Setup data for datatables --}}
     @php
     $heads = [
     'ID',
-    'Name',
-    ['label' => 'Phone', 'width' => 40],
-    ['label' => 'Actions', 'no-export' => true, 'width' => 5],
+    'Nombre',
+    ['label' => 'Descripción', 'width' => 40],
+    ['label' => 'Tipo', 'no-export' => true, 'width' => 5],
+    ['label' => 'Acciones', 'no-export' => true, 'width' => 5, 'orderable' => false],
     ];
 
-    $btnEdit = '<button class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit">
-        <i class="fa fa-lg fa-fw fa-pen"></i>
-    </button>';
-    $btnDelete = '<button class="btn btn-xs btn-default text-danger mx-1 shadow" title="Delete">
-        <i class="fa fa-lg fa-fw fa-trash"></i>
-    </button>';
-    $btnDetails = '<button class="btn btn-xs btn-default text-teal mx-1 shadow" title="Details">
-        <i class="fa fa-lg fa-fw fa-eye"></i>
-    </button>';
-
     $config = [
-    'data' => [
-    [22, 'John Bender', '+02 (123) 123456789', '<nobr>'.$btnEdit.$btnDelete.$btnDetails.'</nobr>'],
-    [19, 'Sophia Clemens', '+99 (987) 987654321', '<nobr>'.$btnEdit.$btnDelete.$btnDetails.'</nobr>'],
-    [3, 'Peter Sousa', '+69 (555) 12367345243', '<nobr>'.$btnEdit.$btnDelete.$btnDetails.'</nobr>'],
-    ],
+    'data' => $resources,
     'order' => [[1, 'asc']],
     'columns' => [null, null, null, ['orderable' => false]],
     ];
@@ -74,8 +83,22 @@
         @foreach($config['data'] as $row)
         <tr>
             @foreach($row as $cell)
-            <td>{!! $cell !!}</td>
+                @if(!$loop->last)
+                    <td>{!! $cell !!}</td>
+                @endif
             @endforeach
+            <td colspan="2">
+                <a href="{{ asset( $row['url']) }}" target="_blank">
+                    <button class="btn btn-xs btn-default text-teal mx-1 shadow" title="Details">
+                        <i class="fa fa-lg fa-fw fa-eye"></i>
+                    </button>
+                </a>
+                <a href="{{ route('resource.delete', $row['id']) }}">
+                    <button class="btn btn-xs btn-default text-danger mx-1 shadow" title="Delete">
+                        <i class="fa fa-lg fa-fw fa-trash"></i>
+                    </button>
+                </a>
+            </td>
         </tr>
         @endforeach
     </x-adminlte-datatable>
@@ -84,11 +107,9 @@
 @stop
 
 @section('css')
-<link rel="stylesheet" href="/css/admin_custom.css">
+    <link href="{{ asset('assets/toast/css/toastr.min.css') }}" rel="stylesheet">
 @stop
 
 @section('js')
-<script>
-    console.log('Hi!');
-</script>
+    <script src="{{ asset('assets/toast/js/toastr.min.js') }}"></script>
 @stop
