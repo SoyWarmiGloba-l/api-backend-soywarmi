@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MedicalCenterSeeder::class,
             MedicalServiceSeeder::class,
+            EventTypeSeeder::class,
+            NewsSeeder::class,
         ]);
         // \App\Models\User::factory(10)->create();
 
