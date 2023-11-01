@@ -11,7 +11,7 @@
 function responseJSON($data, $status, $message)
 {
     return response()->json([
-        'status' => $status == 200 ? true : false,
+        'status' => $status == 200 || $status == 201 ? true : false,
         'message' => $message,
         'data' => $data,
     ], $status);
