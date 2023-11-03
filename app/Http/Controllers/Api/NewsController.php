@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\News\StoreNewsRequest;
+use App\Models\Image;
 use App\Models\News;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class NewsController extends Controller
 {
@@ -15,7 +17,7 @@ class NewsController extends Controller
      */
     public function index(): JsonResponse
     {
-        return responseJSON(News::with('eventType')->get(), 200, 'News fetched successfully.');
+        return responseJSON(News::with('eventType', 'images')->get(), 200, 'News fetched successfully.');
     }
 
     /**
@@ -24,8 +26,27 @@ class NewsController extends Controller
     public function store(StoreNewsRequest $request): JsonResponse
     {
         try {
-            $news = News::create($request->all());
+            $news = News::create([
+                'event_type_id' => $request->event_type_id,
+                'title' => $request->title,
+                'description' => $request->description,
+                'start_date' => isset($request->start_date) ? $request->start_date : null,
+                'end_date' => isset($request->end_date) ? $request->end_date : null,
+            ]);
 
+            if ($request->has('files'))
+            {
+            $files = $request->file('files');
+                if (count($files) > 0) {
+                    foreach ($files as $file) {
+                        $image = new Image();
+                        $image->name = $file->getClientOriginalName();
+                        $image->type = '.'. $file->getClientOriginalExtension();
+                        $image->url = '/storage/' . Storage::disk('public')->putFile('images', $file);
+                        $news->images()->save($image);
+                    }
+                }
+            }
             return responseJSON($news, 201, 'News created successfully.');
         } catch (\Exception $e) {
             return responseJSON(null, 400, $e->getMessage());
@@ -38,7 +59,7 @@ class NewsController extends Controller
     public function show(News $news): JsonResponse
     {
         try {
-            return responseJSON($news->load('eventType'), 200, 'News fetched successfully.');
+            return responseJSON($news->load('eventType', 'images'), 200, 'News fetched successfully.');
         } catch (\Exception $e) {
             return responseJSON(null, 400, $e->getMessage());
         }
@@ -64,8 +85,8 @@ class NewsController extends Controller
     public function destroy(News $news): JsonResponse
     {
         try {
+            $news->images()->delete();
             $news->delete();
-
             return responseJSON(null, 200, 'News deleted successfully.');
         } catch (\Exception $e) {
             return responseJSON(null, 400, $e->getMessage());
