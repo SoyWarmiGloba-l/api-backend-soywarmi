@@ -13,7 +13,7 @@ use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ResourceController;
-
+use App\Http\Controllers\Api\ActivityController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -40,6 +40,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('comments', CommentController::class);
     Route::resource('news', NewsController::class);
     Route::resource('event_types', EventTypeController::class);
+    Route::resource('activities', ActivityController::class);
     Route::resource('resources', ResourceController::class);
 });
 Route::post('auth/login', [AuthController::class, 'login']);

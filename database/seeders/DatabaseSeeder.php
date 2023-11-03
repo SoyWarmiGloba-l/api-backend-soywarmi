@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             MedicalServiceSeeder::class,
             EventTypeSeeder::class,
             NewsSeeder::class,
+            ActivitySeeder::class
         ]);
         // \App\Models\User::factory(10)->create();
 
