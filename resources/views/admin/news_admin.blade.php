@@ -6,6 +6,7 @@
     <h1>Administrar las Noticias</h1>
 @stop
 @section('plugins.Select2', true)
+@section('plugins.Summernote', true)
 
 @section('content')
     @if(session()->has('success'))
@@ -14,7 +15,7 @@
         </x-adminlte-alert>
     @endif
     <x-adminlte-card theme="maroon" theme-mode="outline">
-        <form action="{{ route('news.save') }}" method="POST">
+        <form action="{{ route('news.save') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="container">
                 <div class="row">
@@ -35,6 +36,14 @@
                             <input type="text" class="form-control" id="tittle" name="tittle" placeholder="Titulo" required>
                         </div>
                     </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="name">Subir imagenes o videos (opcional)</label>
+                            <x-adminlte-input-file-krajee id="kifPholder" name="kifPholder[]"
+                                                          igroup-size="sm" data-msg-placeholder="Choose multiple files..."
+                                                          data-show-cancel="false" data-show-close="false" multiple preset-mode="minimalist"/>
+                        </div>
+                    </div>
                     <input type="hidden" name="save" id="saveType" value="true">
                     <input type="hidden" name="id" id="id" value="0">
                 </div>
@@ -42,7 +51,16 @@
                     <div class="col">
                         <div class="form-group">
                             <label for="name">Descripcion</label>
-                            <textarea class="form-control" id="description" name="description" placeholder="Descripcion...." required></textarea>
+                            <x-adminlte-text-editor name="description" id="description" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="container">
+                        <div class="row">
+                            <h3>Imagenes subidas</h3>
+                        </div>
+                        <div class="row" id="dataImage">
                         </div>
                     </div>
                 </div>
@@ -71,7 +89,7 @@
                     <tr>
                         <td>{{ $new->id }}</td>
                         <td>{{ $new->title }}</td>
-                        <td class="text-truncate" style="word-wrap: break-word;">{{ $new->description }}</td>
+                        <td class="text-truncate" style="word-wrap: break-word;">{!! $new->description !!}</td>
                         <td>{{ $new->eventType->title }}</td>
                         <td colspan="2">
                             <x-adminlte-button label="Editar" onClick="changeData({{ $new->id }})" data-toggle="modal" data-target="#modalCustom" class="bg-teal btn-outline-info"/>
@@ -107,10 +125,21 @@
                 success: function (data) {
                     var dataObject = data.data[0];
                     $('#tittle').val(dataObject.title);
-                    $('#description').val(dataObject.description);
+                    $('#description').summernote('code', dataObject.description);
                     $('#eventType').val(dataObject.event_type_id).trigger('change');
                     $('#saveType').val(false);
                     $('#id').val(dataObject.id);
+                    //for js from inage
+                    for (var i = 0; i < dataObject.images.length; i++) {
+                        var image = dataObject.images[i];
+                        $('#dataImage').append(
+                            '<div class="col-4">' +
+                            '<div class="card">' +
+                            '<div class="card-body">' +
+                            '<img src="' + image.url + '" class="img-fluid" alt="Responsive image">' + '</div>' +
+                            '</div>' +
+                            '</div>');
+                    }
                 }
             })
         }
