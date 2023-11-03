@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\FaqController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -42,6 +43,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('event_types', EventTypeController::class);
     Route::resource('activities', ActivityController::class);
     Route::resource('resources', ResourceController::class);
+    Route::resource('faqs', FaqController::class);
 });
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::group([
