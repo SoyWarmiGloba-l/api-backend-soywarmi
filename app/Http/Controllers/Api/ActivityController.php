@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Activity\StoreActivityRequest;
 use App\Models\Activity;
+use App\Models\Image;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ActivityController extends Controller
 {
@@ -15,7 +17,7 @@ class ActivityController extends Controller
      */
     public function index() : JsonResponse
     {
-        return responseJSON(Activity::with('eventType')->get(), 200, 'Activity list.');
+        return responseJSON(Activity::with('eventType', 'images')->get(), 200, 'Activity list.');
     }
 
     /**
@@ -24,7 +26,29 @@ class ActivityController extends Controller
     public function store(StoreActivityRequest $request) : JsonResponse
     {
         try {
-            $activity = Activity::create($request->validated());
+            $activity = Activity::create([
+                'event_type_id' => $request->event_type_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'end_date' => $request->end_date,
+                'area' => $request->area,
+                'step' => $request->steps,
+                'requirement' => $request->requirements,
+            ]);
+
+            if($request->has('files'))
+            {
+                $files = $request->file('files');
+                if (count($files) > 0) {
+                    foreach ($files as $file) {
+                        $image = new Image();
+                        $image->name = $file->getClientOriginalName();
+                        $image->type = '.'. $file->getClientOriginalExtension();
+                        $image->url = '/storage/' . Storage::disk('public')->putFile('images', $file);
+                        $activity->images()->save($image);
+                    }
+                }
+            }
             return responseJSON($activity, 201, 'Activity created.');
         } catch (\Exception $e) {
             return responseJSON(null, 500, $e->getMessage());

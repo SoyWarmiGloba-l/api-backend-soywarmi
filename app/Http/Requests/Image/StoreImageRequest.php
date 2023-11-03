@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\News;
+namespace App\Http\Requests\Image;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreNewsRequest extends FormRequest
+class StoreImageRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,12 +29,7 @@ class StoreNewsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'event_type_id' => 'required|exists:event_types,id',
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'start_date' => 'required',
-            'end_date' => 'required',
-            'files' => 'required',
+
         ];
     }
 }
