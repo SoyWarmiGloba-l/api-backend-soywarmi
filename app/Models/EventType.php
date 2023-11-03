@@ -17,4 +17,9 @@ class EventType extends Model
     {
         return $this->hasMany(News::class);
     }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class);
+    }
 }
