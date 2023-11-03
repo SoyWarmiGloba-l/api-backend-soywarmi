@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\ImageController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -44,6 +45,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('activities', ActivityController::class);
     Route::resource('resources', ResourceController::class);
     Route::resource('faqs', FaqController::class);
+    Route::resource('images', ImageController::class)->except('store', 'update');
 });
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::group([

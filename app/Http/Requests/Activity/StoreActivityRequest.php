@@ -33,8 +33,9 @@ class StoreActivityRequest extends FormRequest
             'description' => 'required|string',
             'end_date' => 'required|date',
             'area' => '',
-            'steps' => '',
-            'requirements' => '',
+            'step' => '',
+            'requirement' => '',
+            'files' => ''
         ];
     }
 }
