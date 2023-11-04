@@ -106,12 +106,13 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('assets/datatable/css/dataTables.bootstrap4.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/datatable/css/bootstrap.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/datatable/css/responsive.bootstrap4.min.css') }}">
 @stop
 
 @section('js')
+    <script src="{{ asset('assets/datatable/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/datatable/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/datatable/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('assets/datatable/js/responsive.bootstrap4.min.js') }}"></script>
     <script>
         function changeData(id)
         {
@@ -153,8 +154,5 @@
             }
         });
     </script>
-    <script src="{{ asset('assets/datatable/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/datatable/js/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('assets/datatable/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('assets/datatable/js/responsive.bootstrap4.min.js') }}"></script>
+
 @stop
