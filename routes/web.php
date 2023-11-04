@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ResourceController;
 use App\Http\Controllers\Web\NewsController;
+use App\Http\Controllers\Web\ActivitiesController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -29,6 +30,10 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/resource/save', [ResourceController::class, 'saveResource'])->name('resource.save');
         Route::get('/resource', [ResourceController::class, 'index'])->name('resource');
         Route::get('/news', [NewsController::class, 'index'])->name('news');
+        Route::post('/activities/get', [ActivitiesController::class, 'getActivities'])->name('activities.get');
+        Route::get('/activities/index', [ActivitiesController::class, 'index'])->name('activities.index');
+        Route::post('/activities/save', [ActivitiesController::class, 'saveActivity'])->name('activities.save');
+        Route::post('/activities/delete/{activity}', [ActivitiesController::class, 'deleteactivity'])->name('activity.delete');
         Route::get('/resource/{resource}', [ResourceController::class, 'deleteResource'])->name('resource.delete');
     });
 });
