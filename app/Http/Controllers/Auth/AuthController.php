@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Firebase\FirebaseToken;
+use Illuminate\Http\Request;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -11,15 +14,25 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
+    public function login(Request $request)
     {
-        $credentials = request(['email', 'password']);
+        $token = new FirebaseToken($request->bearerToken());
 
-        if (! $token = auth('api')->attempt($credentials)) {
-            return responseJSON(null, 401, 'Unauthorized');
+        try {
+            $payload = $token->verify(config('services.firebase.project_id'));
+        } catch (\Exception $e) {
+            return responseJSON(null, 401, $e->getMessage());
         }
-
-        return $this->respondWithToken($token);
+        if (User::where('id', $payload->user_id)->exists()) {
+            return responseJSON(null, 401, 'User already exists');
+        }
+        $user = User::create([
+            'id' => $payload->user_id,
+            'email' => $payload->email,
+            'name' => $payload->name,
+            'avatar' => $payload->avatar,
+        ]);
+        return responseJSON($user, 200, 'Success');
     }
 
     /**
