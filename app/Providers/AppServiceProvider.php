@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Firebase\Auth\Token\Verifier;
 
 class AppServiceProvider extends ServiceProvider
 {
