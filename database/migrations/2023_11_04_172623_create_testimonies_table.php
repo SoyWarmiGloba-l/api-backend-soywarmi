@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('testimonies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->default(1);
             $table->string('title');
             $table->text('description');
             $table->enum('status', ['active', 'inactive']);

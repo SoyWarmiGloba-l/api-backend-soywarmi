@@ -13,7 +13,7 @@ class TestimonyController extends Controller
      */
     public function index()
     {
-        return responseJSON(Testimony::all(), 200, 'Testimonies retrieved successfully');
+        return responseJSON(Testimony::with('user')->get(), 200, 'Testimonies retrieved successfully');
     }
 
     /**
@@ -29,7 +29,11 @@ class TestimonyController extends Controller
      */
     public function show(Testimony $testimony)
     {
-        //
+        try {
+            return responseJSON($testimony->load('user'), 200, 'Testimony retrieved successfully');
+        } catch (\Exception $e) {
+            return responseJSON(null, 500, $e->getMessage());
+        }
     }
 
     /**
