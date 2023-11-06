@@ -24,7 +24,14 @@ class AuthController extends Controller
             return responseJSON(null, 401, $e->getMessage());
         }
         if (User::where('id', $payload->user_id)->exists()) {
-            return responseJSON(null, 401, 'User already exists');
+            $user = User::where('id', $payload->user_id)->first();
+            $user->update([
+                'id' => $payload->user_id,
+                'name' => $payload->name,
+                'avatar' => $payload->avatar,
+                'email' => $payload->email,
+            ]);
+            return responseJSON(null, 401, 'User already exists but updated');
         }
         $user = User::create([
             'id' => $payload->user_id,
