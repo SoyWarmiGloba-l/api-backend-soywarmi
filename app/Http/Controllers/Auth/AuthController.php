@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Firebase\FirebaseToken;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -19,26 +21,35 @@ class AuthController extends Controller
         $token = new FirebaseToken($request->bearerToken());
 
         try {
-            $payload = $token->verify(config('services.firebase.project_id'));
+            $payload = $token->verify_other(config('services.firebase.project_id'));
         } catch (\Exception $e) {
             return responseJSON(null, 401, $e->getMessage());
         }
-        if (User::where('id', $payload->user_id)->exists()) {
-            $user = User::where('id', $payload->user_id)->first();
+        //dd($payload);
+        if (User::where('id', $payload->authenticated_user->uid)->exists()) {
+            $user = User::where('id', $payload->authenticated_user->uid)->first();
             $user->update([
-                'id' => $payload->user_id,
-                'name' => $payload->name,
-                'avatar' => $payload->avatar,
-                'email' => $payload->email,
+                'id' => $payload->authenticated_user->uid,
+                'name' => $payload->authenticated_user->displayName,
+                'email' => $payload->authenticated_user->email,
+                'password' => Hash::make($payload->authenticated_user->uid),
+                'role' => 'Admin',
             ]);
-            return responseJSON(null, 401, 'User already exists but updated');
+
+            //$auth_login = Auth::guard('api')->loginUsingId($user->id);
+
+            return responseJSON([], 401, 'User already exists but updated');
         }
         $user = User::create([
-            'id' => $payload->user_id,
-            'email' => $payload->email,
-            'name' => $payload->name,
-            'avatar' => $payload->avatar,
+            'id' => $payload->authenticated_user->uid,
+            'name' => $payload->authenticated_user->displayName,
+            'email' => $payload->authenticated_user->email,
+            'password' => Hash::make($payload->authenticated_user->uid),
+            'role' => 'Admin',
         ]);
+
+        //auth('api')->login($user);
+
         return responseJSON($user, 200, 'Success');
     }
 
