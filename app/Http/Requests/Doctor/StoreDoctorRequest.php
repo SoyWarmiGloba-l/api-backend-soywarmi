@@ -30,6 +30,7 @@ class StoreDoctorRequest extends FormRequest
     {
         return [
             'person_id' => 'required|integer|exists:people,id',
+            'description' => 'required|string',
             'speciality' => 'required|string',
             'degree_place' => 'required|string',
         ];

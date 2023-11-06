@@ -18,6 +18,7 @@ class DoctorFactory extends Factory
     {
         return [
             'person_id' => $this->faker->randomElement(\App\Models\Person::all()->pluck('id')->toArray()),
+            'description' => $this->faker->text(),
             'speciality' => $this->faker->randomElement(['Cardiologist', 'Neurologist', 'Pediatrician']),
             'degree_place' => $this->faker->randomElement(['Universidad de Chile', 'Universidad de Perú', 'Universidad de Colombia']),
         ];
