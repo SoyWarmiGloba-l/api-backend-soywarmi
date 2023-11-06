@@ -4,9 +4,12 @@ namespace App\Firebase;
 
 use UnexpectedValueException;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Kreait\Laravel\Firebase\Facades\Firebase;
+use Kreait\Firebase\Exception\FailedToVerifyToken;
 
 class FirebaseToken
 {
@@ -56,13 +59,45 @@ class FirebaseToken
     public function verify(string $projectId): object
     {
         $keys = $this->getPublicKeys();
+
         $allowed_algos = (object) self::ALLOWED_ALGOS;
 
-        $payload = JWT::decode($this->token, $keys, $allowed_algos);
+        //$payload = JWT::decode($this->token, $keys, $allowed_algos);
 
+        $payload = JWT::decode($this->token, new key($keys, 'RS256'));
+        dd($payload);
         $this->validatePayload($payload, $projectId);
 
         return $payload;
+    }
+
+    public function verify_other(string $projectId): object
+    {
+        //echo $request;
+        $response = (object) [];
+        $token = $this->token;
+        $response->token = $token;
+
+        $auth = app('firebase.auth');
+
+        try {
+            $verifiedIdToken = $auth->verifyIdToken($token);
+            //echo var_dump($verifiedIdToken);
+        } catch (FailedToVerifyToken $e) {
+            echo 'The token is invalid: ' . $e->getMessage();
+        }
+
+        /* check token payload */
+        $email = $verifiedIdToken->claims()->get('email');
+        $response->payload_email = $email;
+        $uid = $verifiedIdToken->claims()->get('sub');
+        $response->payload_uid = $uid;
+
+        /* check authenticated user */
+        $user = $auth->getUser($uid);
+        $response->authenticated_user = $user;
+
+        return $response;
     }
 
     /**
