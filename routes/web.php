@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ResourceController;
 use App\Http\Controllers\Web\NewsController;
 use App\Http\Controllers\Web\ActivitiesController;
+use App\Http\Controllers\Web\TestimonyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,6 +36,10 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/activities/save', [ActivitiesController::class, 'saveActivity'])->name('activities.save');
         Route::post('/activities/delete/{activity}', [ActivitiesController::class, 'deleteactivity'])->name('activity.delete');
         Route::get('/resource/{resource}', [ResourceController::class, 'deleteResource'])->name('resource.delete');
+        Route::get('/testimony/index', [TestimonyController::class, 'index'])->name('testimony.index');
+        Route::post('/testimony/save', [TestimonyController::class, 'save'])->name('testimony.save');
+        Route::post('/testimony/get', [TestimonyController::class, 'getTestimony'])->name('testimony.get');
+        Route::post('/testimony/delete/{testimony}', [TestimonyController::class, 'deleteTestimony'])->name('testimony.delete');
     });
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
