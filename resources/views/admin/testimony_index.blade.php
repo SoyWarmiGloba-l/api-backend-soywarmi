@@ -38,6 +38,8 @@
                     <label for="state">Estado(Check=Activo, Uncheck=Inactivo)</label>
                     <input type="checkbox" class="form-control" id="state" name="state" />
                 </div>
+                <input type="hidden" name="save" id="saveType" value="true">
+                <input type="hidden" name="id" id="id" value="0">
             </div>
             <div class="row">
                 <div class="col">

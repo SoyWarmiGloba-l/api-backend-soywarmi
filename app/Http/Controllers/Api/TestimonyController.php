@@ -13,7 +13,7 @@ class TestimonyController extends Controller
      */
     public function index()
     {
-        return responseJSON(Testimony::with('user')->get(), 200, 'Testimonies retrieved successfully');
+        return responseJSON(Testimony::with('user')->where('status', 'active')->get(), 200, 'Testimonies retrieved successfully');
     }
 
     /**
