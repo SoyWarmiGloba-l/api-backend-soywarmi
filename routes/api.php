@@ -47,6 +47,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('resources', ResourceController::class);
     Route::resource('faqs', FaqController::class);
     Route::resource('testimonies', TestimonyController::class);
+    Route::get('testimonies/slug/{slug}', [TestimonyController::class, 'showSlug']);
     Route::resource('images', ImageController::class)->except('store', 'update');
 });
 Route::post('auth/login', [AuthController::class, 'login']);

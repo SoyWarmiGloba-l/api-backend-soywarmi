@@ -36,6 +36,15 @@ class TestimonyController extends Controller
         }
     }
 
+    public function showSlug($slug)
+    {
+        try {
+            return responseJSON(Testimony::where('slug', $slug)->with('user')->first(), 200, 'Testimony retrieved successfully');
+        } catch (\Exception $e) {
+            return responseJSON(null, 500, $e->getMessage());
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      */
