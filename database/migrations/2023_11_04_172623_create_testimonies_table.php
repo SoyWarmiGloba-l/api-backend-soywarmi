@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('testimonies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('person_id')->constrained('people');
+            $table->foreignId('person_id')->constrained('people')->nullable();
             $table->string('title');
             $table->text('description');
             $table->enum('status', ['active', 'inactive']);

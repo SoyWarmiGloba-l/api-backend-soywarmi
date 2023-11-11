@@ -52,6 +52,11 @@ class Person extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function testimonies(): HasMany
+    {
+        return $this->hasMany(Testimony::class);
+    }
+
     public function getParticipantDetailsAttribute()
     {
         return [
