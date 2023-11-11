@@ -13,7 +13,8 @@
     {{ session()->get('success') }}
 </x-adminlte-alert>
 @endif
-<x-adminlte-card id="cardSaveEdit" theme="maroon" title="Añadir Actividad" theme-mode="outline" collapsible="collapsed">
+<x-adminlte-card id="cardSaveEdit" theme="maroon" title="Añadir Testimonio" theme-mode="outline"
+    collapsible="collapsed">
     <form id="formSave" action="{{ route('testimony.save') }}" method="POST">
         @csrf
         <div class="container">
