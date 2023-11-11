@@ -16,4 +16,9 @@ class Testimony extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function person()
+    {
+        return $this->belongsTo(Person::class);
+    }
 }
