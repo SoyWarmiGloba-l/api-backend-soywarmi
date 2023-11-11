@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('person_id')->constrained('people')->nullable();
             $table->string('title');
+            $table->string('slug')->unique();
             $table->text('description');
             $table->enum('status', ['active', 'inactive']);
             $table->timestamps();

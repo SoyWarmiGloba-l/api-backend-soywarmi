@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use App\Models\Testimony;
+use Illuminate\Support\Str;
 
 class TestimonyController extends Controller
 {
@@ -33,8 +34,9 @@ class TestimonyController extends Controller
     public function save(Request $request)
     {
         $testimony = Testimony::create([
-            'person_id' => isset($request->person) ? $request->person : null,
+            'person_id' => isset($request->person) ? $request->person : 1,
             'title' => $request->tittle,
+            'slug' => Str::slug($request->tittle),
             'description' => strip_tags($request->description),
             'status' => $request->state == "on" ? "active" : "inactive",
         ]);
