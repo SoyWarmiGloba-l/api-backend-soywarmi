@@ -33,14 +33,27 @@ class TestimonyController extends Controller
 
     public function save(Request $request)
     {
-        $testimony = Testimony::create([
+        if ($request->save == "true") {
+            $testimony = Testimony::create([
+                'person_id' => isset($request->person) ? $request->person : 1,
+                'title' => $request->tittle,
+                'slug' => Str::slug($request->tittle),
+                'description' => strip_tags($request->description),
+                'status' => $request->state == "on" ? "active" : "inactive",
+            ]);
+            session()->flash('success', 'Testimonio creado');
+            return redirect()->back();
+        }
+
+        Testimony::where('id', $request->id)->update([
             'person_id' => isset($request->person) ? $request->person : 1,
             'title' => $request->tittle,
             'slug' => Str::slug($request->tittle),
             'description' => strip_tags($request->description),
             'status' => $request->state == "on" ? "active" : "inactive",
         ]);
-        session()->flash('success', 'Testimonio creado');
+
+        session()->flash('success', 'Testimonio actualizado');
         return redirect()->back();
     }
 }
