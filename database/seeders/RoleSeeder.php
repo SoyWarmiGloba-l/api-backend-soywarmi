@@ -28,5 +28,9 @@ class RoleSeeder extends Seeder
             'name' => 'Voluntario',
             'description' => 'Voluntario',
         ]);
+        Role::create([
+            'name' => 'SoyWarmi',
+            'description' => 'Solo miembros de SoyWarmi',
+        ]);
     }
 }
