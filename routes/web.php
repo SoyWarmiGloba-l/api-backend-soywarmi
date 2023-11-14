@@ -5,6 +5,8 @@ use App\Http\Controllers\Web\ResourceController;
 use App\Http\Controllers\Web\NewsController;
 use App\Http\Controllers\Web\ActivitiesController;
 use App\Http\Controllers\Web\TestimonyController;
+use App\Http\Controllers\Web\TeamsController;
+use App\Http\Controllers\Web\PeopleController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -40,6 +42,11 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/testimony/save', [TestimonyController::class, 'save'])->name('testimony.save');
         Route::post('/testimony/get', [TestimonyController::class, 'getTestimony'])->name('testimony.get');
         Route::post('/testimony/delete/{testimony}', [TestimonyController::class, 'deleteTestimony'])->name('testimony.delete');
+        Route::get('/teams/index', [TeamsController::class, 'index'])->name('teams.index');
+        Route::get('/people/index', [PeopleController::class, 'index'])->name('people.index');
+        Route::post('/people/save', [PeopleController::class, 'savePeople'])->name('people.save');
+        Route::post('/people/delete/{people}', [PeopleController::class, 'deletePeople'])->name('people.delete');
+        Route::post('/people/get', [PeopleController::class, 'getPerson'])->name('people.get');
     });
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
