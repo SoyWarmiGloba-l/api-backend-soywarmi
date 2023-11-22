@@ -51,6 +51,9 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('images', ImageController::class)->except('store', 'update');
 });
 Route::post('auth/login', [AuthController::class, 'login']);
+Route::post('auth/register', [AuthController::class, 'createGeneralPublicUser']);
+
+
 Route::group([
 
     'middleware' => 'api',

@@ -53,7 +53,16 @@ class AuthController extends Controller
 
         return responseJSON($user, 200, 'Success');
     }
-
+    public function createGeneralPublicUser(Request $request){
+        $user = User::create([
+            'id' => $request->id,
+            'name' =>$request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'Publico General',
+        ]);
+        return responseJSON($user, 200, 'Success');
+    }
     /**
      * Get the authenticated User.
      *
