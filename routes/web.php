@@ -47,6 +47,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/people/save', [PeopleController::class, 'savePeople'])->name('people.save');
         Route::post('/people/delete/{people}', [PeopleController::class, 'deletePeople'])->name('people.delete');
         Route::post('/people/get', [PeopleController::class, 'getPerson'])->name('people.get');
+        Route::post('/teams/save', [TeamsController::class, 'storeTeam'])->name('teams.save');
+        Route::post('/teams/get', [TeamsController::class, 'getTeam'])->name('teams.get');
     });
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
