@@ -70,7 +70,11 @@
             <tr>
                 <td>{{ $testimony->id }}</td>
                 <td>{{ $testimony->title }}</td>
-                <td class="text-truncate" style="word-wrap: break-word;">{!! $testimony->description !!}</td>
+                <td>
+                    <span class="text-truncate" style="word-wrap: break-word; text-justify: inter-word">
+                        {!! $testimony->description !!}
+                    </span>
+                </td>
                 <td>{{ $testimony->status == 'active' ? 'Activo' : 'Inactivo' }}</td>
                 <td>{{ $testimony->person->name }}</td>
                 <td colspan="2">
