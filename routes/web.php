@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ResourceController;
 use App\Http\Controllers\Web\NewsController;
 use App\Http\Controllers\Web\ActivitiesController;
+use App\Http\Controllers\Web\FaqController;
 use App\Http\Controllers\Web\TestimonyController;
 use App\Http\Controllers\Web\TeamsController;
 use App\Http\Controllers\Web\PeopleController;
@@ -49,6 +50,10 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/people/get', [PeopleController::class, 'getPerson'])->name('people.get');
         Route::post('/teams/save', [TeamsController::class, 'storeTeam'])->name('teams.save');
         Route::post('/teams/get', [TeamsController::class, 'getTeam'])->name('teams.get');
+        Route::get('/faq/index', [FaqController::class, 'index'])->name('faq.index');
+        Route::post('/faq/save', [FaqController::class, 'saveFaq'])->name('faq.save');
+        Route::post('/faq/get', [FaqController::class, 'getFaq'])->name('faq.get');
+        Route::post('/faq/delete/{faq}', [FaqController::class, 'deleteFaq'])->name('faq.delete');
     });
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

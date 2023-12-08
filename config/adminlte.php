@@ -336,6 +336,11 @@ return [
             'url' => 'admin/people/index',
             'icon' => 'far fa-fw fa-file',
         ],
+        [
+            'text' => 'Preguntas Frecuentes',
+            'url' => 'admin/faq/index',
+            'icon' => 'far fa-fw fa-file',
+        ],
         /*['header' => 'account_settings'],
         [
             'text' => 'profile',
