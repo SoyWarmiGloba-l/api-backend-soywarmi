@@ -21,6 +21,7 @@ class PersonFactory extends Factory
             'role_id' => $this->faker->randomElement(\App\Models\Role::all()->pluck('id')->toArray()),
             'team_id' => $this->faker->randomElement(\App\Models\Team::all()->pluck('id')->toArray()),
             'name' => $this->faker->name(),
+            'description' => $this->faker->sentence(6),
             'lastname' => $this->faker->lastName(),
             'mother_lastname' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),

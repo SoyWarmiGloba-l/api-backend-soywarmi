@@ -17,6 +17,9 @@ use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\TestimonyController;
+use App\Http\Controllers\Api\SubscribeController;
+use App\Models\Role;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,6 +38,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Route group with middleware and prefinx
 Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('teams', TeamController::class);
+    Route::get('teams/rol/{rol}', [TeamController::class, 'showTeamRole']);
     Route::resource('people', PersonController::class);
     Route::resource('doctors', DoctorController::class);
     Route::resource('medical_centers', MedicalCenterController::class);
@@ -49,6 +53,8 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('testimonies', TestimonyController::class);
     Route::get('testimonies/slug/{slug}', [TestimonyController::class, 'showSlug']);
     Route::resource('images', ImageController::class)->except('store', 'update');
+    Route::post('/subscribe', [SubscribeController::class, 'store']);
+    Route::post('/subscribe/{hash}', [SubscribeController::class, 'show'])->name('subscribe.show');
 });
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::group([

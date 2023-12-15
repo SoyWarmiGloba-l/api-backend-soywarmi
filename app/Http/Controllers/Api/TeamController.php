@@ -77,4 +77,13 @@ class TeamController extends Controller
             return responseJSON(null, 500, $e->getMessage());
         }
     }
+
+    public function showTeamRole($rol)
+    {
+        try {
+            return responseJSON(Team::with('person', 'role')->where('role_id', '=', $rol)->get(), 200, 'Success');
+        } catch (\Exception $e) {
+            return responseJSON(null, 500, $e->getMessage());
+        }
+    }
 }
