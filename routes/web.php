@@ -5,6 +5,8 @@ use App\Http\Controllers\Web\ResourceController;
 use App\Http\Controllers\Web\NewsController;
 use App\Http\Controllers\Web\ActivitiesController;
 use App\Http\Controllers\Web\TestimonyController;
+use App\Http\Controllers\MensajesAuxController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -42,4 +44,11 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/testimony/delete/{testimony}', [TestimonyController::class, 'deleteTestimony'])->name('testimony.delete');
     });
 });
+Route::post('/posts_mensajes', [MensajesAuxController::class, 'posts_mensajes']);
+
+Route::get('/mensajes_aux', [MensajesAuxController::class, 'index']);
+Route::get('/get_1', [MensajesAuxController::class, 'get_1']);
+
+
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

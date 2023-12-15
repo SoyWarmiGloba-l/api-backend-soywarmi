@@ -16,3 +16,16 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+Broadcast::channel('mensajes.{uuid}', function ($user, $uuid) {
+    // As I set the user in $request->user()
+    // Laravel already sends this user's data in the $user parameter
+    // return $user->uuid === $uuid;
+    return true;
+});
+
+Broadcast::channel('mensajes', function ($user) {
+    // As I set the user in $request->user()
+    // Laravel already sends this user's data in the $user parameter
+    // return $user->uuid === $uuid;
+    return true;
+});

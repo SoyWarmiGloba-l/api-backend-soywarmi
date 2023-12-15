@@ -54,6 +54,13 @@ class AuthController extends Controller
         return responseJSON($user, 200, 'Success');
     }
     public function createGeneralPublicUser(Request $request){
+        $token = new FirebaseToken($request->bearerToken());
+
+        try {
+            $payload = $token->verify_other(config('services.firebase.project_id'));
+        } catch (\Exception $e) {
+            return responseJSON(null, 401, $e->getMessage());
+        }
         $user = User::create([
             'id' => $request->id,
             'name' =>$request->name,

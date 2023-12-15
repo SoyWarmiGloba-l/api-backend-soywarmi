@@ -17,6 +17,9 @@ use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\TestimonyController;
+
+use App\Http\Controllers\MensajesAuxController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -32,26 +35,46 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Route group with middleware and prefinx
+// Route group with middleware and prefinx
 Route::middleware('auth:api')->prefix('v1')->group(function () {
-    Route::resource('teams', TeamController::class);
-    Route::resource('people', PersonController::class);
+    // Route::resource('teams', TeamController::class);
+    // Route::resource('people', PersonController::class);
+    // Route::resource('medical_centers', MedicalCenterController::class);
+    // Route::resource('medical_services', MedicalServiceController::class);
+    // Route::resource('publications', PublicationController::class);
+    // Route::resource('comments', CommentController::class);
+    // Route::resource('news', NewsController::class);
+    // Route::resource('event_types', EventTypeController::class);
+    // Route::resource('activities', ActivityController::class);
+    // Route::resource('resources', ResourceController::class);
+    // Route::resource('faqs', FaqController::class);
+    // Route::resource('testimonies', TestimonyController::class);
+    // Route::get('testimonies/slug/{slug}', [TestimonyController::class, 'showSlug']);
+    // Route::resource('images', ImageController::class)->except('store', 'update');
     Route::resource('doctors', DoctorController::class);
-    Route::resource('medical_centers', MedicalCenterController::class);
-    Route::resource('medical_services', MedicalServiceController::class);
-    Route::resource('publications', PublicationController::class);
-    Route::resource('comments', CommentController::class);
-    Route::resource('news', NewsController::class);
-    Route::resource('event_types', EventTypeController::class);
-    Route::resource('activities', ActivityController::class);
-    Route::resource('resources', ResourceController::class);
-    Route::resource('faqs', FaqController::class);
-    Route::resource('testimonies', TestimonyController::class);
-    Route::get('testimonies/slug/{slug}', [TestimonyController::class, 'showSlug']);
-    Route::resource('images', ImageController::class)->except('store', 'update');
+
 });
-Route::post('auth/login', [AuthController::class, 'login']);
+Route::resource('teams', TeamController::class);
+Route::resource('people', PersonController::class);
+Route::resource('medical_centers', MedicalCenterController::class);
+Route::resource('medical_services', MedicalServiceController::class);
+Route::resource('publications', PublicationController::class);
+Route::resource('comments', CommentController::class);
+Route::resource('news', NewsController::class);
+Route::resource('event_types', EventTypeController::class);
+Route::resource('activities', ActivityController::class);
+Route::resource('resources', ResourceController::class);
+Route::resource('faqs', FaqController::class);
+Route::resource('testimonies', TestimonyController::class);
+Route::get('testimonies/slug/{slug}', [TestimonyController::class, 'showSlug']);
+Route::resource('images', ImageController::class)->except('store', 'update');
+
+Route::post('post_1', [MensajesAuxController::class, 'save']);
+Route::get('get_1', [MensajesAuxController::class, 'get_1']);
+
+
 Route::post('auth/register', [AuthController::class, 'createGeneralPublicUser']);
+Route::post('auth/login', [AuthController::class, 'login']);
 
 
 Route::group([
