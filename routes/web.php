@@ -8,6 +8,8 @@ use App\Http\Controllers\Web\FaqController;
 use App\Http\Controllers\Web\TestimonyController;
 use App\Http\Controllers\Web\TeamsController;
 use App\Http\Controllers\Web\PeopleController;
+use App\Http\Controllers\MensajesAuxController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -56,4 +58,11 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/faq/delete/{faq}', [FaqController::class, 'deleteFaq'])->name('faq.delete');
     });
 });
+Route::post('/posts_mensajes', [MensajesAuxController::class, 'posts_mensajes']);
+
+Route::get('/mensajes_aux', [MensajesAuxController::class, 'index']);
+Route::get('/get_1', [MensajesAuxController::class, 'get_1']);
+
+
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

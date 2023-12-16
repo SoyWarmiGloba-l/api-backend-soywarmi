@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Firebase\FirebaseToken;
+use Illuminate\Support\Facades\Log;
+
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -28,13 +30,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Auth::viaRequest('firebase', function (Request $request) {
-            $token = $request->bearerToken();
-
+            $token = new FirebaseToken($request->bearerToken());
             try {
-                $payload = (new FirebaseToken($token))->verify_other(
-                    config('services.firebase.project_id')
-                );
-
+                $payload = $token->verify_other(config('services.firebase.project_id'));
                 return User::find($payload->authenticated_user->uid);
             } catch (\Exception $e) {
                 return null;
