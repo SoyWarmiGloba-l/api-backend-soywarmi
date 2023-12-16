@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\TestimonyController;
 use App\Http\Controllers\Api\SubscribeController;
+use App\Http\Controllers\Api\ChatMessagesParticipation;
+
 use App\Models\Role;
 
 /*
@@ -55,7 +57,12 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('images', ImageController::class)->except('store', 'update');
     Route::post('/subscribe', [SubscribeController::class, 'store']);
     Route::post('/subscribe/{hash}', [SubscribeController::class, 'show'])->name('subscribe.show');
+
 });
+Route::get('get_messages/{chat}', [ChatMessagesParticipation::class, 'obtenerChatMessagesConversation']);
+Route::post('post_message/{chat}', [ChatMessagesParticipation::class, 'postMessage']);
+
+
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::group([
 
