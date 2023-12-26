@@ -19,7 +19,11 @@ use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\TestimonyController;
 use App\Http\Controllers\Api\SubscribeController;
 use App\Http\Controllers\Api\ChatConversationsController;
+use App\Http\Controllers\Api\ChatMessagesParticipation;
+
 use App\Models\Role;
+
+use App\Http\Controllers\MensajesAuxController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,17 +40,53 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Route group with middleware and prefinx
-Route::middleware('auth:api')->prefix('v1')->group(function () {
-    Route::resource('teams', TeamController::class);
-    Route::get('teams/rol/{rol}', [TeamController::class, 'showTeamRole']);
-    Route::resource('people', PersonController::class);
+// Route group with middleware and prefinx
+// Route::middleware('auth:api')->prefix('v1')->group(function () {
+//     // Route::resource('teams', TeamController::class);
+//     // Route::resource('people', PersonController::class);
+//     // Route::resource('medical_centers', MedicalCenterController::class);
+//     // Route::resource('medical_services', MedicalServiceController::class);
+//     // Route::resource('publications', PublicationController::class);
+//     // Route::resource('comments', CommentController::class);
+//     // Route::resource('news', NewsController::class);
+//     // Route::resource('event_types', EventTypeController::class);
+//     // Route::resource('activities', ActivityController::class);
+//     // Route::resource('resources', ResourceController::class);
+//     // Route::resource('faqs', FaqController::class);
+//     // Route::resource('testimonies', TestimonyController::class);
+//     // Route::get('testimonies/slug/{slug}', [TestimonyController::class, 'showSlug']);
+//     // Route::resource('images', ImageController::class)->except('store', 'update');
+//     Route::resource('doctors', DoctorController::class);
+//     Route::resource('news', NewsController::class);
+//     Route::resource('teams', TeamController::class);
+//     Route::resource('people', PersonController::class);
+//     Route::resource('medical_centers', MedicalCenterController::class);
+//     Route::resource('medical_services', MedicalServiceController::class);
+//     Route::resource('publications', PublicationController::class);
+//     Route::resource('comments', CommentController::class);
+//     Route::resource('event_types', EventTypeController::class);
+//     Route::resource('activities', ActivityController::class);
+//     Route::resource('resources', ResourceController::class);
+//     Route::resource('faqs', FaqController::class);
+//     Route::resource('testimonies', TestimonyController::class);
+//     Route::get('testimonies/slug/{slug}', [TestimonyController::class, 'showSlug']);
+//     Route::resource('images', ImageController::class)->except('store', 'update');
+//     Route::get('get_messages/{chat}', [ChatMessagesParticipation::class, 'obtenerChatMessagesConversation']);
+//     Route::post('post_message/{chat}', [ChatMessagesParticipation::class, 'postMessage']);
+    
+// });
+Route::group([
+    'prefix' => 'v1',
+], function ($router) {
+
     Route::resource('doctors', DoctorController::class);
+    Route::resource('news', NewsController::class);
+    Route::resource('teams', TeamController::class);
+    Route::resource('people', PersonController::class);
     Route::resource('medical_centers', MedicalCenterController::class);
     Route::resource('medical_services', MedicalServiceController::class);
     Route::resource('publications', PublicationController::class);
     Route::resource('comments', CommentController::class);
-    Route::resource('news', NewsController::class);
     Route::resource('event_types', EventTypeController::class);
     Route::resource('activities', ActivityController::class);
     Route::resource('resources', ResourceController::class);
@@ -57,11 +97,19 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::post('/subscribe', [SubscribeController::class, 'store']);
     Route::post('/subscribe/{hash}', [SubscribeController::class, 'show'])->name('subscribe.show');
     Route::get('chat_conversations',[ChatConversationsController::class,'obtenerConversacionesUsuario']);
-
+    Route::get('get_messages/{chat}', [ChatMessagesParticipation::class, 'obtenerChatMessagesConversation']);
+    Route::post('post_message/{chat}', [ChatMessagesParticipation::class, 'postMessage']);
+    
 });
 
 
+// Route::post('post_1', [MensajesAuxController::class, 'save']);
+// Route::get('get_1', [MensajesAuxController::class, 'get_1']);
+
+Route::post('auth/register', [AuthController::class, 'createGeneralPublicUser']);
 Route::post('auth/login', [AuthController::class, 'login']);
+
+
 Route::group([
 
     'middleware' => 'api',
