@@ -40,7 +40,8 @@ class RespuestaReceptor implements ShouldBroadcast
         //     // new PrivateChannel("mensaje.{$this->mensaje->id}")
         //];
         //return [new PrivateChannel('mensajes.' . $this->id),new PrivateChannel('mensajes')];
-        return [new PrivateChannel('mensajes.' . $this->id),new PrivateChannel('mensajes'),new Channel('mensajes-publicos')];
+        //return [new PrivateChannel('mensajes.' . $this->id),new PrivateChannel('mensajes'),new Channel('mensajes-publicos')];
+        return [new Channel('mensajes-publicos')];
     }
     public function broadcastAs()
     {
@@ -48,7 +49,7 @@ class RespuestaReceptor implements ShouldBroadcast
          * By default the Laravel event will be something like 'App\Events\PrivateEvent', here you can set the name of the custom and cleaner event.
          * You will hear this same event in Flutter after connecting to the channel.
          */
-        return 'evento-mensaje';
+        return 'mensaje-recibido';
     }
      public function broadcastWith()
     {

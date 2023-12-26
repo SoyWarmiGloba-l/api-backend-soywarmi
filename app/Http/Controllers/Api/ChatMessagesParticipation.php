@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use App\Firebase\FirebaseToken;
+use App\Events\RespuestaReceptor;
+use App\Events\RegistroMensaje;
+use App\Events\MensajesSinLeer;
 
 
 class ChatMessagesParticipation extends Controller
@@ -47,11 +50,14 @@ class ChatMessagesParticipation extends Controller
         $resultado_insercion=DB::table('chat_mensages_participation')->insert([
             'id_chat_participation' => $id_chat_participation[0]->id_chat_participation,
             'content' => (string)$contenido,
+            'read' => 0,
             'created_at' => (string)$fecha_actual_gmt_4,
             'updated_at' => (string)$fecha_actual_gmt_4,
         ]);
         if ($resultado_insercion) {
-            
+            //RespuestaReceptor::dispatch('c1fa8fb1-8598-4824-aeb5-fcc05c54ca11', ['order' => 123]);
+            MensajesSinLeer::dispatch($payload->authenticated_user->uid);
+            RegistroMensaje::dispatch((string)$chat);
         } 
         return response()->json(['message' => 'Mensaje insertado correctamente.'], 200);
     }
