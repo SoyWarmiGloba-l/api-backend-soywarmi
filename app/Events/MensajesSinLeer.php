@@ -37,6 +37,6 @@ class MensajesSinLeer implements ShouldBroadcast
     public function broadcastAs()
     {
       
-        return 'registro-mensaje-chat';
+        return 'nuevos-mensajes-chat';
     }
 }

@@ -54,11 +54,24 @@ class ChatMessagesParticipation extends Controller
             'created_at' => (string)$fecha_actual_gmt_4,
             'updated_at' => (string)$fecha_actual_gmt_4,
         ]);
+        $id_usuarios_destino=DB::table('users as u')
+        ->select('u.id')
+        ->join('chat_participations as cp', 'u.id', '=', 'cp.id_user')
+        ->join('chat_conversations as cc', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
+        ->where('cc.id_chat_conversation', '=', (string)$chat)
+        ->where('cp.id_user', '!=', $payload->authenticated_user->uid)
+        ->get();
+        
+        
+
         if ($resultado_insercion) {
             //RespuestaReceptor::dispatch('c1fa8fb1-8598-4824-aeb5-fcc05c54ca11', ['order' => 123]);
-            MensajesSinLeer::dispatch($payload->authenticated_user->uid);
             RegistroMensaje::dispatch((string)$chat);
+            foreach ($id_usuarios_destino as $id) {
+                MensajesSinLeer::dispatch((string)$id->id);
+            }
         } 
+        //return responseJSON($id_usuarios_destino, 200, 'ChatConversations fetched successfully.');
         return response()->json(['message' => 'Mensaje insertado correctamente.'], 200);
     }
 }
