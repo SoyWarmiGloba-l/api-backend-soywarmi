@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function obtenerUsuarios(Request $request,$busqueda): JsonResponse
+    public function obtainUsers(Request $request,$busqueda): JsonResponse
     {
         $token = new FirebaseToken($request->bearerToken());
 
