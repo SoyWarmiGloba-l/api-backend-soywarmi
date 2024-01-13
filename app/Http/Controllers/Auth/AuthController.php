@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Person;
 
 class AuthController extends Controller
 {
@@ -55,20 +56,23 @@ class AuthController extends Controller
     }
     public function createGeneralPublicUser(Request $request){
         $token = new FirebaseToken($request->bearerToken());
-
         try {
             $payload = $token->verify_other(config('services.firebase.project_id'));
         } catch (\Exception $e) {
             return responseJSON(null, 401, $e->getMessage());
         }
-        $user = User::create([
-            'id' => $request->id,
-            'name' =>$request->name,
-            'email' => $request->email,
+        
+        $people = Person::create([
+            'role_id' => 3,
+            'team_id' => 11,
+            'name' => $request->name,
+            'lastname' => $request->lastname,
+            'email' => (string)$payload->authenticated_user->email,
             'password' => Hash::make($request->password),
-            'role' => 'Publico General',
+            'birthday' => $request->birthday,
+            'phone' => $request->phone,
         ]);
-        return responseJSON($user, 200, 'Success');
+        return responseJSON($people, 200, 'Success');
     }
     /**
      * Get the authenticated User.
