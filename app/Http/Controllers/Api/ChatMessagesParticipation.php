@@ -10,10 +10,39 @@ use App\Firebase\FirebaseToken;
 use App\Events\RespuestaReceptor;
 use App\Events\RegistroMensaje;
 use App\Events\MensajesSinLeer;
-
+use App\Models\ChatMensagesParticipation;
 
 class ChatMessagesParticipation extends Controller
 {
+    public function checkReadMessage(Request $request,$conversationId): JsonResponse{
+
+        $token = new FirebaseToken($request->bearerToken());
+
+        try {
+            $payload = $token->verify_other(config('services.firebase.project_id'));
+        } catch (\Exception $e) {
+            return responseJSON(null, 401, $e->getMessage());
+        }
+        $results = DB::table('chat_mensages_participation as cmp')
+        ->select('cmp.id_chat_mensages_participation', 'cmp.read_message_participants')
+        ->join('chat_participations as cp', 'cmp.id_chat_participation', '=', 'cp.id_chat_participation')
+        ->join('chat_conversations as cc', 'cc.id_chat_conversation', '=', 'cp.id_chat_conversation')
+        ->join('users as u', 'u.id', '=', 'cp.id_user')
+        ->where('cc.id_chat_conversation', $conversationId)
+        ->get();
+        foreach ($results as $data) {
+            $id = $data->id_chat_mensages_participation;
+            $json = json_decode($data->read_message_participants, true);
+        
+            $json[$payload->authenticated_user->uid] = 1;
+        
+            DB::table('chat_mensages_participation')
+                ->where('id_chat_mensages_participation', $id)
+                ->update(['read_message_participants' => json_encode($json)]);
+        }
+        return response()->json(['message' => 'Mensaje marcados con check correctamente.'], 200);
+
+    }
     public function obtenerChatMessagesConversation(Request $request,$chat): JsonResponse
     {
         $id_chat_conversation = $chat;
@@ -47,10 +76,22 @@ class ChatMessagesParticipation extends Controller
         $fecha_actual_gmt_4 = Carbon::now('GMT-4')->toDateTimeString();
         $contenido = $request->input('content');
 
+        $userIds = DB::table('chat_conversations as cc')
+        ->join('chat_participations as cp', 'cc.id_chat_conversation', '=', 'cp.id_chat_conversation')
+        ->join('users as u', 'u.id', '=', 'cp.id_user')
+        ->where('cc.id_chat_conversation', $chat)
+        ->pluck('u.id')
+        ->toArray();
+
+        $jsonData = collect($userIds)->mapWithKeys(function ($userId) {
+            return [$userId => 0];
+        })->toJson();
+        
+
         $resultado_insercion=DB::table('chat_mensages_participation')->insert([
             'id_chat_participation' => $id_chat_participation[0]->id_chat_participation,
             'content' => (string)$contenido,
-            'read' => 0,
+            'read_message_participants' => $jsonData,
             'created_at' => (string)$fecha_actual_gmt_4,
             'updated_at' => (string)$fecha_actual_gmt_4,
         ]);

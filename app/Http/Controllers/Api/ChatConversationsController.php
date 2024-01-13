@@ -39,6 +39,7 @@ class ChatConversationsController extends Controller
                         ELSE cc.name
                     END AS name
                 '),
+                           
                 DB::raw('
                     (
                         SELECT COUNT(cmp4.id_chat_mensages_participation) 
@@ -47,8 +48,18 @@ class ChatConversationsController extends Controller
                         JOIN chat_conversations cc4 ON cc4.id_chat_conversation = cp4.id_chat_conversation 
                         JOIN users u4 ON u4.id = cp4.id_user 
                         WHERE cc4.id_chat_conversation = cc.id_chat_conversation 
-                        AND cmp4.read = 0 
+                        AND JSON_UNQUOTE(JSON_EXTRACT(cmp4.read_message_participants, \'$."'.$userId.'"\')) = 0 
                         AND cp4.id_user != "'.$userId.'") AS unread_messages_count'),
+                // DB::raw('
+                //     (
+                //         SELECT COUNT(cmp4.id_chat_mensages_participation) 
+                //         FROM chat_mensages_participation cmp4 
+                //         JOIN chat_participations cp4 ON cmp4.id_chat_participation = cp4.id_chat_participation 
+                //         JOIN chat_conversations cc4 ON cc4.id_chat_conversation = cp4.id_chat_conversation 
+                //         JOIN users u4 ON u4.id = cp4.id_user 
+                //         WHERE cc4.id_chat_conversation = cc.id_chat_conversation 
+                //         AND cmp4.read = 0 
+                //         AND cp4.id_user != "'.$userId.'") AS unread_messages_count'),
                 DB::raw('
                     (
                         SELECT cmp5.content 
@@ -83,5 +94,60 @@ class ChatConversationsController extends Controller
     public function index(): JsonResponse
     {
         return responseJSON(ChatConversations::get(), 200, 'ChatConversations fetched successfully.');
+    }
+    public function registerChatConversation(Request $request): JsonResponse
+    {
+        $token = new FirebaseToken($request->bearerToken());
+        try {
+            $payload = $token->verify_other(config('services.firebase.project_id'));
+        } catch (\Exception $e) {
+            return responseJSON(null, 401, $e->getMessage());
+        }
+        $userId = $payload->authenticated_user->uid;
+        $users = [];
+        array_push($users,$userId);
+        foreach ($request->users as $user) {
+            array_push($users,$user);
+        }
+        $length = count($users);
+        $type=2;
+        $name="";
+        $crear_nuevo=true;
+        $chat_conversation_id=null;
+        if($length>2){
+            $name=(string)$request->name;
+            $type=2;
+        }else{
+            $name="";
+            $type=1;
+            $result = DB::table('chat_conversations AS cc')
+            ->join('chat_participations AS cp', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
+            ->join('users AS u', 'u.id', '=', 'cp.id_user')
+            ->select('cp.id_chat_conversation', DB::raw('GROUP_CONCAT(u.id) AS users_ids'))
+            ->groupBy('cp.id_chat_conversation')
+            ->havingRaw('COUNT(cp.id_chat_participation) = 2')
+            ->get();
+            foreach ($result as $r) {
+                $arrayResultante = array_map('trim', explode(',', $r->users_ids));
+                if (in_array($users[0], $arrayResultante) && in_array($users[1], $arrayResultante)) {
+                    $crear_nuevo=false;
+                    $chat_conversation_id = $r->id_chat_conversation;
+                } 
+            }
+
+        }
+        if($crear_nuevo){
+            $chat_conversation_id = DB::table('chat_conversations')->insertGetId([
+                'name' => $name,
+                'id_type_chat_conversations' => $type,
+            ]);
+            $chat_participations = [];
+            foreach ($users as $user) {
+                array_push($chat_participations,['id_user' => $user, 'id_chat_conversation' => $chat_conversation_id]);
+            }
+            DB::table('chat_participations')->insert($chat_participations);
+        }
+        return responseJSON($chat_conversation_id, 200, 'ChatConversations fetched successfully.');
+        //return response()->json(['message' => 'Conversacion registrada exitosamente.'], 200);
     }
 }

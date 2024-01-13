@@ -20,7 +20,7 @@ use App\Http\Controllers\Api\TestimonyController;
 use App\Http\Controllers\Api\SubscribeController;
 use App\Http\Controllers\Api\ChatConversationsController;
 use App\Http\Controllers\Api\ChatMessagesParticipation;
-
+use App\Http\Controllers\Api\UserController;
 use App\Models\Role;
 
 use App\Http\Controllers\MensajesAuxController;
@@ -99,7 +99,11 @@ Route::group([
     Route::get('chat_conversations',[ChatConversationsController::class,'obtenerConversacionesUsuario']);
     Route::get('get_messages/{chat}', [ChatMessagesParticipation::class, 'obtenerChatMessagesConversation']);
     Route::post('post_message/{chat}', [ChatMessagesParticipation::class, 'postMessage']);
-    
+    Route::get('get_users', [UserController::class, 'obtainUsers']);
+    Route::post('register_chat_conversation', [ChatConversationsController::class, 'registerChatConversation']);
+    Route::put('check_read_message/{conversationId}', [ChatMessagesParticipation::class, 'checkReadMessage']);
+    Route::post('post_publication', [PublicationController::class, 'savePublication']);
+
 });
 
 
