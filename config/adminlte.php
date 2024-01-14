@@ -337,6 +337,11 @@ return [
             'icon' => 'far fa-fw fa-file',
         ],
         [
+            'text' => 'Premios',
+            'url' => 'admin/awards/index',
+            'icon' => 'far fa-fw fa-file',
+        ],
+        [
             'text' => 'Preguntas Frecuentes',
             'url' => 'admin/faq/index',
             'icon' => 'far fa-fw fa-file',

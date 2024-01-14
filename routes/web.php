@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ResourceController;
 use App\Http\Controllers\Web\NewsController;
 use App\Http\Controllers\Web\ActivitiesController;
+use App\Http\Controllers\Web\AwardController;
 use App\Http\Controllers\Web\FaqController;
 use App\Http\Controllers\Web\TestimonyController;
 use App\Http\Controllers\Web\TeamsController;
@@ -54,6 +55,10 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/faq/save', [FaqController::class, 'saveFaq'])->name('faq.save');
         Route::post('/faq/get', [FaqController::class, 'getFaq'])->name('faq.get');
         Route::post('/faq/delete/{faq}', [FaqController::class, 'deleteFaq'])->name('faq.delete');
+        Route::get('/awards/index', [AwardController::class, 'index'])->name('award.index');
+        Route::post('/awards/save', [AwardController::class, 'saveAward'])->name('award.save');
+        Route::post('/awards/get', [AwardController::class, 'getAward'])->name('award.get');
+        Route::post('/awards/delete/{award}', [AwardController::class, 'deleteAward'])->name('award.delete');
     });
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
