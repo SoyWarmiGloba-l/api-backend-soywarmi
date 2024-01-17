@@ -23,6 +23,9 @@ class ChatMessagesParticipation extends Controller
         } catch (\Exception $e) {
             return responseJSON(null, 401, $e->getMessage());
         }
+        $email = $payload->authenticated_user->email;
+        $userId = Person::where('email', $email)->first()->value('id');
+
         $results = DB::table('chat_mensages_participation as cmp')
         ->select('cmp.id_chat_mensages_participation', 'cmp.read_message_participants')
         ->join('chat_participations as cp', 'cmp.id_chat_participation', '=', 'cp.id_chat_participation')
@@ -34,7 +37,7 @@ class ChatMessagesParticipation extends Controller
             $id = $data->id_chat_mensages_participation;
             $json = json_decode($data->read_message_participants, true);
         
-            $json[$payload->authenticated_user->uid] = 1;
+            $json[$userId] = 1;
         
             DB::table('chat_mensages_participation')
                 ->where('id_chat_mensages_participation', $id)
@@ -67,10 +70,13 @@ class ChatMessagesParticipation extends Controller
         } catch (\Exception $e) {
             return responseJSON(null, 401, $e->getMessage());
         }
+        $email = $payload->authenticated_user->email;
+        $userId = Person::where('email', $email)->first()->value('id');
+
         $id_chat_participation = DB::table('chat_participations as cp')
         ->select('cp.id_chat_participation')
         ->where('cp.id_chat_conversation', '=', (string)$chat)
-        ->where('cp.id_user', '=', $payload->authenticated_user->uid)
+        ->where('cp.id_user', '=',$userId)
         ->get();
         
         $fecha_actual_gmt_4 = Carbon::now('GMT-4')->toDateTimeString();
@@ -100,7 +106,7 @@ class ChatMessagesParticipation extends Controller
         ->join('chat_participations as cp', 'u.id', '=', 'cp.id_user')
         ->join('chat_conversations as cc', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
         ->where('cc.id_chat_conversation', '=', (string)$chat)
-        ->where('cp.id_user', '!=', $payload->authenticated_user->uid)
+        ->where('cp.id_user', '!=',$userId)
         ->get();
         
         

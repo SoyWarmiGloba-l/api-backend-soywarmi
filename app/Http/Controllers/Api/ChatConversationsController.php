@@ -20,8 +20,8 @@ class ChatConversationsController extends Controller
         } catch (\Exception $e) {
             return responseJSON(null, 401, $e->getMessage());
         }
-        $userId = $payload->authenticated_user->uid;
-
+        $email = $payload->authenticated_user->email;
+        $userId = Person::where('email', $email)->first()->value('id');
         $result = DB::table('chat_conversations as cc')
             ->select(
                 'cc.id_chat_conversation',
@@ -103,7 +103,8 @@ class ChatConversationsController extends Controller
         } catch (\Exception $e) {
             return responseJSON(null, 401, $e->getMessage());
         }
-        $userId = $payload->authenticated_user->uid;
+        $email = $payload->authenticated_user->email;
+        $userId = Person::where('email', $email)->first()->value('id');
         $users = [];
         array_push($users,$userId);
         foreach ($request->users as $user) {
