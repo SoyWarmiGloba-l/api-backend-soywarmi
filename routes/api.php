@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\AwardController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\TestimonyController;
@@ -55,6 +56,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::resource('images', ImageController::class)->except('store', 'update');
     Route::post('/subscribe', [SubscribeController::class, 'store']);
     Route::post('/subscribe/{hash}', [SubscribeController::class, 'show'])->name('subscribe.show');
+    Route::get('awards/all', [AwardController::class, 'index']);
 });
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::group([
