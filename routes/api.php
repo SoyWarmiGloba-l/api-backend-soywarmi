@@ -99,7 +99,7 @@ Route::group([
     Route::get('chat_conversations',[ChatConversationsController::class,'obtenerConversacionesUsuario']);
     Route::get('get_messages/{chat}', [ChatMessagesParticipation::class, 'obtenerChatMessagesConversation']);
     Route::post('post_message/{chat}', [ChatMessagesParticipation::class, 'postMessage']);
-    //Route::get('get_users', [UserController::class, 'obtainUsers']);
+    Route::get('get_users', [PersonController::class, 'getPeopleToChat']);
     Route::post('register_chat_conversation', [ChatConversationsController::class, 'registerChatConversation']);
     Route::put('check_read_message/{conversationId}', [ChatMessagesParticipation::class, 'checkReadMessage']);
     Route::post('post_publication', [PublicationController::class, 'savePublication']);
