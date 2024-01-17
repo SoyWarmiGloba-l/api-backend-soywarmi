@@ -7,6 +7,9 @@ use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Firebase\FirebaseToken;
+
 
 class PersonController extends Controller
 {
@@ -17,6 +20,29 @@ class PersonController extends Controller
     {
         try {
             return responseJSON(Person::with('doctor', 'team', 'role')->get(), 200, 'Success');
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function getPeopleToChat(Request $request)
+    {
+        $token = new FirebaseToken($request->bearerToken());
+
+        try {
+            $payload = $token->verify_other(config('services.firebase.project_id'));
+        } catch (\Exception $e) {
+            return responseJSON(null, 401, $e->getMessage());
+        }
+        $email = $payload->authenticated_user->email;
+
+        try {
+            $people = DB::table('people as p')
+            ->select('p.id','p.email')
+            ->where('p.email', '!=',$email)
+            ->get();
+            
+            return responseJSON($people, 200, 'Success');
         } catch (\Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
@@ -59,6 +85,7 @@ class PersonController extends Controller
     public function update(Request $request, Person $person)
     {
         try {
+            
             if (isset($request->image)) {
                 $url = Storage::disk('public')->put($request->image->getClientOriginalName(), $request->image);
                 $request->merge([
