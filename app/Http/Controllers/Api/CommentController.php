@@ -23,7 +23,16 @@ class CommentController extends Controller
     public function store(StoreCommentRequest $request)
     {
         try {
-            return responseJSON(Comment::create($request->validated()), 201, 'Comment created successfully');
+            $comment=Comment::create([
+                "person_id"=> $request->person_id,
+                "publication_id"=>  $request->publication_id,
+                "content"=>  $request->content,
+                "state"=>  $request->state,
+                "created_at"=> $request->created_at,
+                "updated_at"=> $request->updated_at,
+                "deleted_at"=> $request->deleted_at
+            ]);
+            return response()->json(['message' => "OK"], 200);
         } catch (\Exception $exception) {
             return responseJSON(null, 500, $exception->getMessage());
         }
