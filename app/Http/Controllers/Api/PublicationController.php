@@ -36,7 +36,7 @@ class PublicationController extends Controller
         $photo1='';
         if ($request->hasFile('photo1')) {
             $files = $request->file('photo1');
-            $photo1 = '/storage/' . Storage::disk('public')->putFile('/profile/images', $files);
+            $photo1 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
         }
         $photo2='';
         if ($request->hasFile('photo2')) {
@@ -47,7 +47,7 @@ class PublicationController extends Controller
         $nombreArchivo="";
         if ($request->hasFile('photo3')) {
             $files = $request->file('photo3');
-            $photo3 = '/storage/' . Storage::disk('public')->putFile('images', $files);
+            $photo3 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
             
         }
         $fecha_actual_gmt_4 = Carbon::now('GMT-4')->toDateTimeString();
@@ -59,11 +59,20 @@ class PublicationController extends Controller
             'content' => json_decode($request->data,true)["content"],
             'created_at' => (string)$fecha_actual_gmt_4,
             'updated_at' => (string)$fecha_actual_gmt_4,
-            'photo1' => Storage::disk('public')->path("")."publications/images/".$request->file('photo1')->getClientOriginalName(),
-            'photo2' => Storage::disk('public')->path("")."publications/images/".$request->file('photo2')->getClientOriginalName(),
-            'photo3' => Storage::disk('public')->path("")."publications/images/".$request->file('photo3')->getClientOriginalName(),
-        ]);
+            'photo1' => ($request->hasFile('photo1'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo1')->getClientOriginalName():"",
+            'photo2' => ($request->hasFile('photo2'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo2')->getClientOriginalName():"",
+            'photo3' => ($request->hasFile('photo3'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo3')->getClientOriginalName():"",
+    ]);
         return response()->json(['message' => Storage::disk('public')->path("")."publications/images/".$nombreArchivo], 200);
+        //return responseJSON($request, 200,"OK");
+    }
+    public function example(Request $request)
+    {
+       
+       
+       
+        
+        return responseJSON(json_decode($request->input('data'))->title, 200, "OK");
         //return responseJSON($request, 200,"OK");
     }
     public function store(StorePublicationRequest $request)
@@ -78,7 +87,7 @@ class PublicationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Publication $publication)
+    public function show(Publication $publication,$id)
     {
         try {
             return responseJSON($publication->load('comments', 'person'), 200, 'Publication retrieved successfully');
@@ -90,17 +99,37 @@ class PublicationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Publication $publication)
+    public function updatePublication(Request $request,$id)
     {
+        $publication = Publication::find($id);
         try {
-            $publication = Publication::find($publication->id);
+            $title = isset(json_decode($request->data, true)["title"]) ? json_decode($request->data, true)["title"] : "";
+            $content = isset(json_decode($request->data, true)["content"]) ? json_decode($request->data, true)["content"] : "";
+
+            $photo1Path = "";
+            if ($request->hasFile('photo1')) {
+                $photo1Path = Storage::disk('public')->path("publications/images/") . $request->file('photo1')->getClientOriginalName();
+            }
+
+            $photo2Path = "";
+            if ($request->hasFile('photo2')) {
+                $photo2Path = Storage::disk('public')->path("publications/images/") . $request->file('photo2')->getClientOriginalName();
+            }
+
+            $photo3Path = "";
+            if ($request->hasFile('photo3')) {
+                $photo3Path = Storage::disk('public')->path("publications/images/") . $request->file('photo3')->getClientOriginalName();
+            }
+            $fecha_actual_gmt_4 = Carbon::now('GMT-4')->toDateTimeString();
             $publication->update([
-                'person_id' => 'Nuevo nombre',
-                'descripcion' => 'Nueva descripción',
-                'otro_atributo' => 'Nuevo valor de otro atributo',
+                'title'      => $title,
+                'content'    => $content,
+                'updated_at' => (string) $fecha_actual_gmt_4,
+                'photo1'     => $photo1Path,
+                'photo2'     => $photo2Path,
+                'photo3'     => $photo3Path,
             ]);
-            $publication->update($request->all());
-            return responseJSON($publication, 200, 'Publication updated successfully');
+            return response()->json(['message' => 'Actualizacion exitosa'], 200);
         } catch (\Exception $exception) {
             return responseJSON(null, 500, $exception->getMessage());
         }
