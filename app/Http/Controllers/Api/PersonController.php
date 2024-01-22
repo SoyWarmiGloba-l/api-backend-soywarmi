@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Firebase\FirebaseToken;
+use Carbon\Carbon;
 
 
 class PersonController extends Controller
@@ -85,7 +86,6 @@ class PersonController extends Controller
     public function update(Request $request, Person $person)
     {
         try {
-            
             if (isset($request->image)) {
                 $url = Storage::disk('public')->put($request->image->getClientOriginalName(), $request->image);
                 $request->merge([
@@ -104,7 +104,32 @@ class PersonController extends Controller
             return responseJSON(null, $e->getMessage(), 500);
         }
     }
+    public function updateUser(Request $request,$id){
+        $person = Person::find($id);
+        try {
+            $photo1Path = "";
+            if ($request->hasFile('photo1')) {
+                $photo1Path = Storage::disk('public')->path("publications/images/") . $request->file('photo1')->getClientOriginalName();
+            }
+            $fecha_actual_gmt_4 = Carbon::now('GMT-4')->toDateTimeString();
+            $person->update([
+                'name'=> isset(json_decode($request->data, true)["name"]) ? json_decode($request->data, true)["name"] :$person->name,
+                "lastname"=>isset(json_decode($request->data, true)["lastname"]) ? json_decode($request->data, true)["lastname"] :$person->lastname,
+                "mother_lastname"=> isset(json_decode($request->data, true)["mother_lastname"]) ? json_decode($request->data, true)["mother_lastname"] :$person->mother_lastname,
+                "photo" => $photo1Path,
+                "birthday"=>isset(json_decode($request->data, true)["birthday"]) ? json_decode($request->data, true)["birthday"] :$person->birthday,
+                "gender"=>isset(json_decode($request->data, true)["gender"]) ? json_decode($request->data, true)["gender"] :$person->gender,
+                "phone"=>isset(json_decode($request->data, true)["phone"]) ? json_decode($request->data, true)["phone"] :$person->phone,
+                'updated_at' => (string) $fecha_actual_gmt_4,
+            ]);
+            //return responseJSON(isset(json_decode($request->data, true)["birthday"]) ?json_decode($request->data, true)["birthday"]:$person->birthday, 200,"OK");
+            //return responseJSON(isset(json_decode($request->data, true)["birthday"]) ? json_decode($request->data, true)["birthday"] :$person->birthday , 200,"OK");
+            return response()->json(['message' => 'Actualizacion exitosa'], 200);
+        } catch (\Exception $exception) {
+            return responseJSON(null, 500, $exception->getMessage());
+        }
 
+    }
     /**
      * Remove the specified resource from storage.
      */
