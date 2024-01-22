@@ -57,14 +57,14 @@ class PublicationController extends Controller
             'person_id' => $userId,
             'title' => json_decode($request->data,true)["title"],
             'content' => json_decode($request->data,true)["content"],
+            'anonymous' => isset(json_decode($request->data, true)["anonymous"]) ? json_decode($request->data, true)["anonymous"] : 1,
             'created_at' => (string)$fecha_actual_gmt_4,
             'updated_at' => (string)$fecha_actual_gmt_4,
             'photo1' => ($request->hasFile('photo1'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo1')->getClientOriginalName():"",
             'photo2' => ($request->hasFile('photo2'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo2')->getClientOriginalName():"",
             'photo3' => ($request->hasFile('photo3'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo3')->getClientOriginalName():"",
     ]);
-        return response()->json(['message' => Storage::disk('public')->path("")."publications/images/".$nombreArchivo], 200);
-        //return responseJSON($request, 200,"OK");
+        return responseJSON($request, 200,"OK");
     }
     public function example(Request $request)
     {
@@ -128,6 +128,7 @@ class PublicationController extends Controller
                 'photo1'     => $photo1Path,
                 'photo2'     => $photo2Path,
                 'photo3'     => $photo3Path,
+                'anonymous' => isset(json_decode($request->data, true)["anonymous"]) ? json_decode($request->data, true)["anonymous"] : $publication->anonymous,
             ]);
             return response()->json(['message' => 'Actualizacion exitosa'], 200);
         } catch (\Exception $exception) {

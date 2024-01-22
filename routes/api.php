@@ -104,8 +104,8 @@ Route::group([
     Route::put('check_read_message/{conversationId}', [ChatMessagesParticipation::class, 'checkReadMessage']);
     Route::post('post_publication', [PublicationController::class, 'savePublication']);
     Route::post('example', [PublicationController::class, 'example']);
-
     Route::post('update_publication/{id}', [PublicationController::class, 'updatePublication']);
+    Route::post('update_user/{id}', [PersonController::class, 'updateUser']);
 
 });
 
