@@ -5,7 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Comment\StoreCommentRequest;
 use App\Models\Comment;
+use App\Models\Notifications;
+use App\Models\Publication;
+
+use App\Models\PeopleNotifications;
 use Illuminate\Http\Request;
+use App\Events\RegistroComentario;
+use App\Events\RegistroNotificacion;
+
+use Illuminate\Support\Str;
+
 
 class CommentController extends Controller
 {
@@ -22,6 +31,7 @@ class CommentController extends Controller
      */
     public function store(StoreCommentRequest $request)
     {
+
         try {
             $comment=Comment::create([
                 "person_id"=> $request->person_id,
@@ -32,6 +42,18 @@ class CommentController extends Controller
                 "updated_at"=> $request->updated_at,
                 "deleted_at"=> $request->deleted_at
             ]);
+            $publication = Publication::where('id', $request->publication_id)->first();
+            RegistroComentario::dispatch((string)$request->publication_id);
+            $notification=Notifications::create([
+                "data"=>  "Comentario a tu publicacion ".$publication->title,
+                "title"=>  "Respondieron a tu publicacion",
+            ]);
+
+            PeopleNotifications::create([
+                "id_people"=>$publication->person_id,
+                "id_notifications"=>$notification->id,
+            ]);
+            RegistroNotificacion::dispatch((string)$publication->person_id);
             return response()->json(['message' => "OK"], 200);
         } catch (\Exception $exception) {
             return responseJSON(null, 500, $exception->getMessage());
@@ -67,10 +89,13 @@ class CommentController extends Controller
     {
         try {
             $comment->delete();
-
+            RegistroComentario::dispatch((string)$comment->publication_id);
             return responseJSON(null, 200, 'Comment deleted successfully');
         } catch (\Exception $exception) {
             return responseJSON(null, 500, $exception->getMessage());
         }
+    }
+    public function getCommentsByPublication($publicationId){
+        return responseJSON(Comment::where('publication_id', $publicationId)->with('publication', 'person')->get(),200,'Comments obtained by publication');
     }
 }
