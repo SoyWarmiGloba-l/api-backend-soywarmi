@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Firebase\FirebaseToken;
 use Carbon\Carbon;
 use App\Models\Person;
+use App\Events\RegistroPublicacion;
+use App\Events\EliminarPublicacion;
+use App\Events\CambioPublicaciones;
 
 
 class PublicationController extends Controller
@@ -33,47 +36,44 @@ class PublicationController extends Controller
         } catch (\Exception $e) {
             return responseJSON(null, 401, $e->getMessage());
         }
-        $photo1='';
+        $url1='';
         if ($request->hasFile('photo1')) {
             $files = $request->file('photo1');
-            $photo1 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
+            $url1 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
         }
-        $photo2='';
+        $url2='';
         if ($request->hasFile('photo2')) {
             $files = $request->file('photo2');
-            $photo2 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
+            $url2 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
         }
-        $photo3='';
-        $nombreArchivo="";
+        $url3='';
         if ($request->hasFile('photo3')) {
             $files = $request->file('photo3');
-            $photo3 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
-            
+            $url3 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
         }
         $fecha_actual_gmt_4 = Carbon::now('GMT-4')->toDateTimeString();
         $email = $payload->authenticated_user->email;
         $userId = Person::where('email', $email)->first()->value('id');
-        Publication::create([
+        $res=Publication::create([
             'person_id' => $userId,
             'title' => json_decode($request->data,true)["title"],
             'content' => json_decode($request->data,true)["content"],
             'anonymous' => isset(json_decode($request->data, true)["anonymous"]) ? json_decode($request->data, true)["anonymous"] : 1,
             'created_at' => (string)$fecha_actual_gmt_4,
             'updated_at' => (string)$fecha_actual_gmt_4,
-            'photo1' => ($request->hasFile('photo1'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo1')->getClientOriginalName():"",
-            'photo2' => ($request->hasFile('photo2'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo2')->getClientOriginalName():"",
-            'photo3' => ($request->hasFile('photo3'))?Storage::disk('public')->path("")."publications/images/".$request->file('photo3')->getClientOriginalName():"",
-    ]);
-        return responseJSON($request, 200,"OK");
+            'photo1' => ($request->hasFile('photo1'))?$url1:"",
+            'photo2' => ($request->hasFile('photo2'))?$url2:"",
+            'photo3' => ($request->hasFile('photo3'))?$url3:"",
+        ]);
+        if($res){
+            $publications=Publication::get();
+            RegistroPublicacion::dispatch((string)($publications->count()));
+        }
+        return response()->json('ok', 200);
     }
     public function example(Request $request)
     {
-       
-       
-       
-        
         return responseJSON(json_decode($request->input('data'))->title, 200, "OK");
-        //return responseJSON($request, 200,"OK");
     }
     public function store(StorePublicationRequest $request)
     {
@@ -144,7 +144,8 @@ class PublicationController extends Controller
         try {
             $publication->comments()->delete();
             $publication->delete();
-
+            CambioPublicaciones::dispatch();
+            EliminarPublicacion::dispatch((string)($publication->id));
             return responseJSON(null, 200, 'Publication deleted successfully');
         } catch (\Exception $exception) {
             return responseJSON(null, 500, $exception->getMessage());
