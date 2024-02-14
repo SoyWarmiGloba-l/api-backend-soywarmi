@@ -10,7 +10,9 @@ use App\Firebase\FirebaseToken;
 use App\Events\RespuestaReceptor;
 use App\Events\RegistroMensaje;
 use App\Events\MensajesSinLeer;
+use App\Models\Person;
 use App\Models\ChatMensagesParticipation;
+use App\Models\ChatParticipations;
 
 class ChatMessagesParticipation extends Controller
 {
@@ -30,14 +32,14 @@ class ChatMessagesParticipation extends Controller
         ->select('cmp.id_chat_mensages_participation', 'cmp.read_message_participants')
         ->join('chat_participations as cp', 'cmp.id_chat_participation', '=', 'cp.id_chat_participation')
         ->join('chat_conversations as cc', 'cc.id_chat_conversation', '=', 'cp.id_chat_conversation')
-        ->join('users as u', 'u.id', '=', 'cp.id_user')
+        ->join('people as u', 'u.id', '=', 'cp.id_user')
         ->where('cc.id_chat_conversation', $conversationId)
         ->get();
         foreach ($results as $data) {
             $id = $data->id_chat_mensages_participation;
             $json = json_decode($data->read_message_participants, true);
         
-            $json[$userId] = 1;
+            $json[(string)$userId] = 1;
         
             DB::table('chat_mensages_participation')
                 ->where('id_chat_mensages_participation', $id)
@@ -50,11 +52,12 @@ class ChatMessagesParticipation extends Controller
     {
         $id_chat_conversation = $chat;
         $results = DB::table('chat_mensages_participation as cmp')
-        ->select('cmp.content', 'cmp.created_at', 'u.id','u.email')
+        ->select('cmp.id_chat_mensages_participation as id','cmp.content', 'cmp.created_at', 'u.id as owner_id','u.email as owner_email')
         ->join('chat_participations as cp', 'cp.id_chat_participation', '=', 'cmp.id_chat_participation')
-        ->join('users as u', 'cp.id_user', '=', 'u.id')
+        ->join('people as u', 'cp.id_user', '=', 'u.id')
         ->join('chat_conversations as cc', 'cc.id_chat_conversation', '=', 'cp.id_chat_conversation')
         ->where('cc.id_chat_conversation', '=', $id_chat_conversation)
+        ->where('cmp.deleted_at', '=', null)
         ->orderBy('cmp.created_at', 'DESC')
         ->get();
         return responseJSON($results, 200, 'ChatConversations fetched successfully.');
@@ -84,7 +87,7 @@ class ChatMessagesParticipation extends Controller
 
         $userIds = DB::table('chat_conversations as cc')
         ->join('chat_participations as cp', 'cc.id_chat_conversation', '=', 'cp.id_chat_conversation')
-        ->join('users as u', 'u.id', '=', 'cp.id_user')
+        ->join('people as u', 'u.id', '=', 'cp.id_user')
         ->where('cc.id_chat_conversation', $chat)
         ->pluck('u.id')
         ->toArray();
@@ -101,7 +104,7 @@ class ChatMessagesParticipation extends Controller
             'created_at' => (string)$fecha_actual_gmt_4,
             'updated_at' => (string)$fecha_actual_gmt_4,
         ]);
-        $id_usuarios_destino=DB::table('users as u')
+        $id_usuarios_destino=DB::table('people as u')
         ->select('u.id')
         ->join('chat_participations as cp', 'u.id', '=', 'cp.id_user')
         ->join('chat_conversations as cc', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
@@ -120,5 +123,16 @@ class ChatMessagesParticipation extends Controller
         } 
         //return responseJSON($id_usuarios_destino, 200, 'ChatConversations fetched successfully.');
         return response()->json(['message' => 'Mensaje insertado correctamente.'], 200);
+    }
+    public function destroy(ChatMensagesParticipation $chatMensagesParticipation): JsonResponse
+    {
+        try {
+            $chatParticipation = ChatParticipations::where('id_chat_participation', $chatMensagesParticipation->id_chat_participation)->first();
+            $chatMensagesParticipation->delete();
+            RegistroMensaje::dispatch((string)$chatParticipation->id_chat_conversation);
+            return responseJSON(null, 200, 'Chat Conversation deleted successfully.');
+        } catch (\Exception $e) {
+            return responseJSON(null, 400, $e->getMessage());
+        }
     }
 }
