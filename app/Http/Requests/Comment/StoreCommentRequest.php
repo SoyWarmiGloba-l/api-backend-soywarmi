@@ -32,6 +32,7 @@ class StoreCommentRequest extends FormRequest
             'person_id' => 'required|exists:people,id',
             'publication_id' => 'required|exists:publications,id',
             'content' => 'required|string',
+            // 'state' => 'required|string',
         ];
     }
 }

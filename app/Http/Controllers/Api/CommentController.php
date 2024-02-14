@@ -55,6 +55,8 @@ class CommentController extends Controller
             ]);
             RegistroNotificacion::dispatch((string)$publication->person_id);
             return response()->json(['message' => "OK"], 200);
+        // try {
+        //     return responseJSON(Comment::create($request->validated()), 201, 'Comment created successfully');
         } catch (\Exception $exception) {
             return responseJSON(null, 500, $exception->getMessage());
         }

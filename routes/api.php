@@ -14,17 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\AwardController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\TestimonyController;
 use App\Http\Controllers\Api\SubscribeController;
-use App\Http\Controllers\Api\ChatConversationsController;
-use App\Http\Controllers\Api\ChatMessagesParticipation;
-use App\Http\Controllers\Api\UserController;
 use App\Models\Role;
-
-use App\Http\Controllers\MensajesAuxController;
-use App\Http\Controllers\Api\NotificationController;
 
 /*
 |--------------------------------------------------------------------------

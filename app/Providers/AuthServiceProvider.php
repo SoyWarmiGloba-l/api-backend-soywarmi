@@ -33,6 +33,13 @@ class AuthServiceProvider extends ServiceProvider
             $token = new FirebaseToken($request->bearerToken());
             try {
                 $payload = $token->verify_other(config('services.firebase.project_id'));
+            // $token = $request->bearerToken();
+
+            // try {
+            //     $payload = (new FirebaseToken($token))->verify_other(
+            //         config('services.firebase.project_id')
+            //     );
+
                 return User::find($payload->authenticated_user->uid);
             } catch (\Exception $e) {
                 return null;

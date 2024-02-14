@@ -71,10 +71,7 @@ class PublicationController extends Controller
         }
         return response()->json('ok', 200);
     }
-    public function example(Request $request)
-    {
-        return responseJSON(json_decode($request->input('data'))->title, 200, "OK");
-    }
+  
     public function store(StorePublicationRequest $request)
     {
         try {
@@ -88,6 +85,7 @@ class PublicationController extends Controller
      * Display the specified resource.
      */
     public function show(Publication $publication,$id)
+    // public function show(Publication $publication)
     {
         try {
             return responseJSON($publication->load('comments', 'person'), 200, 'Publication retrieved successfully');
@@ -131,6 +129,12 @@ class PublicationController extends Controller
                 'anonymous' => isset(json_decode($request->data, true)["anonymous"]) ? json_decode($request->data, true)["anonymous"] : $publication->anonymous,
             ]);
             return response()->json(['message' => 'Actualizacion exitosa'], 200);
+    // public function update(Request $request, Publication $publication)
+    // {
+    //     try {
+    //         $publication->update($request->all());
+
+    //         return responseJSON($publication, 200, 'Publication updated successfully');
         } catch (\Exception $exception) {
             return responseJSON(null, 500, $exception->getMessage());
         }
