@@ -25,7 +25,24 @@ class PersonController extends Controller
             return response()->json($e->getMessage(), 500);
         }
     }
+    public function getMyAccount(Request $request)
+    {
+        $token = new FirebaseToken($request->bearerToken());
 
+        try {
+            $payload = $token->verify_other(config('services.firebase.project_id'));
+        } catch (\Exception $e) {
+            return responseJSON(null, 401, $e->getMessage());
+        }
+        $email = $payload->authenticated_user->email;
+
+        try{
+            $my_account = Person::where('email', $email)->first();
+            return responseJSON($my_account, 200,"OK");
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
+    }
     public function getPeopleToChat(Request $request)
     {
         $token = new FirebaseToken($request->bearerToken());
@@ -38,11 +55,7 @@ class PersonController extends Controller
         $email = $payload->authenticated_user->email;
 
         try {
-            $people = DB::table('people as p')
-            ->select('p.id','p.email')
-            ->where('p.email', '!=',$email)
-            ->get();
-            
+            $people = Person::where('email',"!=",$email)->get();
             return responseJSON($people, 200, 'Success');
         } catch (\Exception $e) {
             return response()->json($e->getMessage(), 500);
@@ -109,21 +122,20 @@ class PersonController extends Controller
         try {
             $photo1Path = "";
             if ($request->hasFile('photo1')) {
-                $photo1Path = Storage::disk('public')->path("publications/images/") . $request->file('photo1')->getClientOriginalName();
+                $files = $request->file('photo1');
+                $url1 = '/storage/' . Storage::disk('public')->putFile('/publications/images', $files);
             }
             $fecha_actual_gmt_4 = Carbon::now('GMT-4')->toDateTimeString();
             $person->update([
                 'name'=> isset(json_decode($request->data, true)["name"]) ? json_decode($request->data, true)["name"] :$person->name,
                 "lastname"=>isset(json_decode($request->data, true)["lastname"]) ? json_decode($request->data, true)["lastname"] :$person->lastname,
                 "mother_lastname"=> isset(json_decode($request->data, true)["mother_lastname"]) ? json_decode($request->data, true)["mother_lastname"] :$person->mother_lastname,
-                "photo" => $photo1Path,
+                "photo" => ($request->hasFile('photo1'))?$url1:"",
                 "birthday"=>isset(json_decode($request->data, true)["birthday"]) ? json_decode($request->data, true)["birthday"] :$person->birthday,
                 "gender"=>isset(json_decode($request->data, true)["gender"]) ? json_decode($request->data, true)["gender"] :$person->gender,
                 "phone"=>isset(json_decode($request->data, true)["phone"]) ? json_decode($request->data, true)["phone"] :$person->phone,
                 'updated_at' => (string) $fecha_actual_gmt_4,
             ]);
-            //return responseJSON(isset(json_decode($request->data, true)["birthday"]) ?json_decode($request->data, true)["birthday"]:$person->birthday, 200,"OK");
-            //return responseJSON(isset(json_decode($request->data, true)["birthday"]) ? json_decode($request->data, true)["birthday"] :$person->birthday , 200,"OK");
             return response()->json(['message' => 'Actualizacion exitosa'], 200);
         } catch (\Exception $exception) {
             return responseJSON(null, 500, $exception->getMessage());

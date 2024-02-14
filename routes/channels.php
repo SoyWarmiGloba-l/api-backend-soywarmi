@@ -29,3 +29,23 @@ Broadcast::channel('mensajes', function ($user) {
     // return $user->uuid === $uuid;
     return true;
 });
+
+Broadcast::channel('comentarios.{uuid}', function ($user, $uuid) {
+    // As I set the user in $request->user()
+    // Laravel already sends this user's data in the $user parameter
+    // return $user->uuid === $uuid;
+    return true;
+});
+
+Broadcast::channel('notificaciones.{uuid}', function ($user, $uuid) {
+    // As I set the user in $request->user()
+    // Laravel already sends this user's data in the $user parameter
+    // return $user->uuid === $uuid;
+    return true;
+});
+Broadcast::channel('publicacion.{uuid}', function ($user, $uuid) {
+    // As I set the user in $request->user()
+    // Laravel already sends this user's data in the $user parameter
+    // return $user->uuid === $uuid;
+    return true;
+});

@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Models\Role;
 
 use App\Http\Controllers\MensajesAuxController;
+use App\Http\Controllers\Api\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +95,10 @@ Route::group([
     Route::resource('testimonies', TestimonyController::class);
     Route::get('testimonies/slug/{slug}', [TestimonyController::class, 'showSlug']);
     Route::resource('images', ImageController::class)->except('store', 'update');
+
+    Route::delete('/chat_conversations/{chatConversation}', [ChatConversationsController::class, 'destroy']);
+    Route::delete('/chat_messages_participation/{chatMensagesParticipation}', [ChatMessagesParticipation::class, 'destroy']);
+
     Route::post('/subscribe', [SubscribeController::class, 'store']);
     Route::post('/subscribe/{hash}', [SubscribeController::class, 'show'])->name('subscribe.show');
     Route::get('chat_conversations',[ChatConversationsController::class,'obtenerConversacionesUsuario']);
@@ -106,7 +111,10 @@ Route::group([
     Route::post('example', [PublicationController::class, 'example']);
     Route::post('update_publication/{id}', [PublicationController::class, 'updatePublication']);
     Route::post('update_user/{id}', [PersonController::class, 'updateUser']);
-
+    Route::get('get_my_account', [PersonController::class, 'getMyAccount']);
+    Route::get('comments/publication/{publicationId}', [CommentController::class, 'getCommentsByPublication']);
+    Route::get('notifications/my-notifications-not-read', [NotificationController::class, 'showMyNotificationsNotRead']);
+    Route::delete('delete_my_notification/{notification}',[NotificationController::class, 'deleteNotificationOfMyListNotificacion']);
 });
 
 

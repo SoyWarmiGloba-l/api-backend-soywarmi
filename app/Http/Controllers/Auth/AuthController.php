@@ -61,18 +61,22 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return responseJSON(null, 401, $e->getMessage());
         }
-        $phone=70000000;
-        $people = Person::create([
-            'role_id' => 3,
-            'team_id' => 11,
-            'name' => $request->name,
-            'lastname' => $request->lastname,
-            'email' => (string)$payload->authenticated_user->email,
-            'password' => Hash::make($request->password),
-            'birthday' => "1995-12-04",
-            'phone' => $phone
-        ]);
-        return responseJSON($people, 200, 'Success');
+        $email = $payload->authenticated_user->email;
+        $user = Person::where('email', $email)->first();
+        if($user){
+            $phone=70000000;
+            $user = Person::create([
+                'role_id' => 3,
+                'team_id' => 11,
+                'name' => $request->name,
+                'lastname' => $request->lastname,
+                'email' => (string)$payload->authenticated_user->email,
+                'password' => Hash::make($request->password),
+                'birthday' => "1995-12-04",
+                'phone' => $phone
+            ]);
+        }
+        return responseJSON($user, 200, 'Success');
     }
     /**
      * Get the authenticated User.
