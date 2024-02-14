@@ -8,10 +8,30 @@ use App\Models\ChatConversations;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Firebase\FirebaseToken;
+use App\Models\Person;
+use App\Events\MensajesSinLeer;
 
 
 class ChatConversationsController extends Controller
 {
+    public function destroy(ChatConversations $chatConversation): JsonResponse
+    {
+        try {
+            $chatConversation->delete();
+            $id_usuarios_destino=DB::table('people as u')
+            ->select('u.id')
+            ->join('chat_participations as cp', 'u.id', '=', 'cp.id_user')
+            ->join('chat_conversations as cc', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
+            ->where('cc.id_chat_conversation', '=', $chatConversation->id_chat_conversation)
+            ->get();
+            foreach ($id_usuarios_destino as $id) {
+                MensajesSinLeer::dispatch((string)$id->id);
+            }
+            return responseJSON(null, 200, 'Chat Conversation deleted successfully.');
+        } catch (\Exception $e) {
+            return responseJSON(null, 400, $e->getMessage());
+        }
+    }
     public function obtenerConversacionesUsuario(Request $request): JsonResponse
     {
         $token = new FirebaseToken($request->bearerToken());
@@ -50,16 +70,6 @@ class ChatConversationsController extends Controller
                         WHERE cc4.id_chat_conversation = cc.id_chat_conversation 
                         AND JSON_UNQUOTE(JSON_EXTRACT(cmp4.read_message_participants, \'$."'.$userId.'"\')) = 0 
                         AND cp4.id_user != "'.$userId.'") AS unread_messages_count'),
-                // DB::raw('
-                //     (
-                //         SELECT COUNT(cmp4.id_chat_mensages_participation) 
-                //         FROM chat_mensages_participation cmp4 
-                //         JOIN chat_participations cp4 ON cmp4.id_chat_participation = cp4.id_chat_participation 
-                //         JOIN chat_conversations cc4 ON cc4.id_chat_conversation = cp4.id_chat_conversation 
-                //         JOIN users u4 ON u4.id = cp4.id_user 
-                //         WHERE cc4.id_chat_conversation = cc.id_chat_conversation 
-                //         AND cmp4.read = 0 
-                //         AND cp4.id_user != "'.$userId.'") AS unread_messages_count'),
                 DB::raw('
                     (
                         SELECT cmp5.content 
@@ -67,6 +77,7 @@ class ChatConversationsController extends Controller
                         JOIN chat_participations cp5 ON cmp5.id_chat_participation = cp5.id_chat_participation 
                         JOIN chat_conversations cc5 ON cc5.id_chat_conversation = cp5.id_chat_conversation 
                         WHERE cc5.id_chat_conversation = cc.id_chat_conversation 
+                        AND cmp5.deleted_at = null
                         ORDER BY cmp5.created_at DESC 
                         LIMIT 1
                     ) AS last_message
@@ -78,14 +89,16 @@ class ChatConversationsController extends Controller
                         JOIN chat_participations cp6 ON cmp6.id_chat_participation = cp6.id_chat_participation 
                         JOIN chat_conversations cc6 ON cc6.id_chat_conversation = cp6.id_chat_conversation 
                         WHERE cc6.id_chat_conversation = cc.id_chat_conversation 
+                        AND cmp6.deleted_at = null
                         ORDER BY cmp6.created_at DESC 
                         LIMIT 1
                     ) AS last_message_date
                 ')
             )
             ->join('chat_participations as cp', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
-            ->join('users as u', 'u.id', '=', 'cp.id_user')
+            ->join('people as u', 'u.id', '=', 'cp.id_user')
             ->where('u.id', '=', $userId)
+            ->where('cc.deleted_at', '=', null)
             ->orderByDesc('last_message_date')
             ->get();
        
@@ -123,7 +136,7 @@ class ChatConversationsController extends Controller
             $type=1;
             $result = DB::table('chat_conversations AS cc')
             ->join('chat_participations AS cp', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
-            ->join('users AS u', 'u.id', '=', 'cp.id_user')
+            ->join('people AS u', 'u.id', '=', 'cp.id_user')
             ->select('cp.id_chat_conversation', DB::raw('GROUP_CONCAT(u.id) AS users_ids'))
             ->groupBy('cp.id_chat_conversation')
             ->havingRaw('COUNT(cp.id_chat_participation) = 2')
@@ -149,6 +162,5 @@ class ChatConversationsController extends Controller
             DB::table('chat_participations')->insert($chat_participations);
         }
         return responseJSON($chat_conversation_id, 200, 'ChatConversations fetched successfully.');
-        //return response()->json(['message' => 'Conversacion registrada exitosamente.'], 200);
     }
 }
