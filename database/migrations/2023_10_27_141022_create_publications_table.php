@@ -16,7 +16,11 @@ return new class extends Migration
             $table->foreignId('person_id')->constrained('people');
             $table->string('title');
             $table->text('content');
-            $table->string('state');
+            $table->string('state')->nullable();
+            $table->string('photo1')->nullable();
+            $table->string('photo2')->nullable();
+            $table->string('photo3')->nullable();
+            $table->boolean('anonymous');
             $table->timestamps();
             $table->softDeletes();
         });

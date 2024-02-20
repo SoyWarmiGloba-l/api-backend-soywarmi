@@ -22,9 +22,9 @@ return new class extends Migration
             $table->string('email', 50);
             $table->string('password');
             $table->string('photo')->nullable();
-            $table->date('birthday');
+            $table->date('birthday')->nullable();
             $table->string('gender')->nullable();
-            $table->integer('phone');
+            $table->integer('phone')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
