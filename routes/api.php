@@ -25,6 +25,8 @@ use App\Http\Controllers\Api\ChatMessagesParticipation;
 use App\Http\Controllers\Api\NotificationController;
 
 use App\Models\Role;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -136,6 +138,12 @@ Route::group([
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
 });
+Route::middleware('auth:api')->prefix('v1')->group(
+    function () {
+        Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+        Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
+    }
+);
 
 
 Route::get('routes', function () {
