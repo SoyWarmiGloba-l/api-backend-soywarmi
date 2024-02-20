@@ -19,6 +19,11 @@ use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\TestimonyController;
 use App\Http\Controllers\Api\SubscribeController;
+
+use App\Http\Controllers\Api\ChatConversationsController;
+use App\Http\Controllers\Api\ChatMessagesParticipation;
+use App\Http\Controllers\Api\NotificationController;
+
 use App\Models\Role;
 
 /*
