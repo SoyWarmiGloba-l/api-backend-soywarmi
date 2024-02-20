@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Firebase\FirebaseToken;
 use App\Models\Person;
 use App\Events\MensajesSinLeer;
+use App\Models\ChatParticipations;
 
 
 class ChatConversationsController extends Controller
@@ -17,15 +18,24 @@ class ChatConversationsController extends Controller
     public function destroy(ChatConversations $chatConversation): JsonResponse
     {
         try {
-            $chatConversation->delete();
-            $id_usuarios_destino=DB::table('people as u')
-            ->select('u.id')
-            ->join('chat_participations as cp', 'u.id', '=', 'cp.id_user')
-            ->join('chat_conversations as cc', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
-            ->where('cc.id_chat_conversation', '=', $chatConversation->id_chat_conversation)
-            ->get();
-            foreach ($id_usuarios_destino as $id) {
-                MensajesSinLeer::dispatch((string)$id->id);
+            $token = new FirebaseToken($request->bearerToken());
+            $payload = $token->verify_other(config('services.firebase.project_id'));
+            $email = $payload->authenticated_user->email;
+            $userId = Person::where('email', $email)->first()->value('id');
+            $chat_partipation=ChatParticipations::where('id_chat_conversation',$chatConversation->id_chat_conversation)->where('id_user',$userId);
+            if($chat_partipation->id_type_chat_participations==1){
+                $chatConversation->delete();
+                $id_usuarios_destino=DB::table('people as u')
+                ->select('u.id')
+                ->join('chat_participations as cp', 'u.id', '=', 'cp.id_user')
+                ->join('chat_conversations as cc', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
+                ->where('cc.id_chat_conversation', '=', $chatConversation->id_chat_conversation)
+                ->get();
+                foreach ($id_usuarios_destino as $id) {
+                    MensajesSinLeer::dispatch((string)$id->id);
+                }
+            }else{
+                return responseJSON(null, 403, "No tiene permiso de eliminar el chat");
             }
             return responseJSON(null, 200, 'Chat Conversation deleted successfully.');
         } catch (\Exception $e) {
@@ -118,8 +128,8 @@ class ChatConversationsController extends Controller
         }
         $email = $payload->authenticated_user->email;
         $userId = Person::where('email', $email)->first()->value('id');
-        $users = [];
-        array_push($users,$userId);
+        $users = [];        
+        
         foreach ($request->users as $user) {
             array_push($users,$user);
         }
@@ -151,13 +161,17 @@ class ChatConversationsController extends Controller
 
         }
         if($crear_nuevo){
+                       
             $chat_conversation_id = DB::table('chat_conversations')->insertGetId([
                 'name' => $name,
                 'id_type_chat_conversations' => $type,
             ]);
+            $chat_participation_creator=['id_user' => $userId, 'id_chat_conversation' => $chat_conversation_id,'id_type_chat_participations'=>1];
+            DB::table('chat_participations')->insert($chat_participation_creator);
+
             $chat_participations = [];
             foreach ($users as $user) {
-                array_push($chat_participations,['id_user' => $user, 'id_chat_conversation' => $chat_conversation_id]);
+                array_push($chat_participations,['id_user' => $user, 'id_chat_conversation' => $chat_conversation_id,'id_type_chat_participations'=>2]);
             }
             DB::table('chat_participations')->insert($chat_participations);
         }
