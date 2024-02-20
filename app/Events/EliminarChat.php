@@ -10,16 +10,18 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class EliminarChat
+class EliminarChat implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+    public string $idChat;
 
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(string $id)
     {
         //
+        $this->idChat = $id;
     }
 
     /**
@@ -30,7 +32,12 @@ class EliminarChat
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new Channel('chat.'.$this->idChat),
         ];
+    }
+    public function broadcastAs()
+    {
+      
+        return 'chat-eliminado';
     }
 }
