@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->string('type')->nullable();
-            $table->morphs('notifiable');
             $table->text('data');
             $table->string('title');
             $table->timestamp('read_at')->nullable();
