@@ -10,21 +10,23 @@ use Illuminate\Support\Facades\DB;
 use App\Firebase\FirebaseToken;
 use App\Models\Person;
 use App\Events\MensajesSinLeer;
+use App\Events\EliminarChat;
 use App\Models\ChatParticipations;
 
 
 class ChatConversationsController extends Controller
 {
-    public function destroy(ChatConversations $chatConversation): JsonResponse
+    public function destroy(Request $request,ChatConversations $chatConversation): JsonResponse
     {
         try {
             $token = new FirebaseToken($request->bearerToken());
             $payload = $token->verify_other(config('services.firebase.project_id'));
             $email = $payload->authenticated_user->email;
-            $userId = Person::where('email', $email)->first()->value('id');
-            $chat_partipation=ChatParticipations::where('id_chat_conversation',$chatConversation->id_chat_conversation)->where('id_user',$userId);
+            $userId = (Person::where('email', $email)->first())->id;
+            $chat_partipation=ChatParticipations::where('id_chat_conversation',$chatConversation->id_chat_conversation)->where('id_user',$userId)->first();
             if($chat_partipation->id_type_chat_participations==1){
                 $chatConversation->delete();
+                EliminarChat::dispatch((string)$chatConversation->id_chat_conversation);
                 $id_usuarios_destino=DB::table('people as u')
                 ->select('u.id')
                 ->join('chat_participations as cp', 'u.id', '=', 'cp.id_user')
@@ -51,7 +53,7 @@ class ChatConversationsController extends Controller
             return responseJSON(null, 401, $e->getMessage());
         }
         $email = $payload->authenticated_user->email;
-        $userId = Person::where('email', $email)->first()->value('id');
+        $userId = (Person::where('email', $email)->first())->id;
         $result = DB::table('chat_conversations as cc')
             ->select(
                 'cc.id_chat_conversation',
@@ -87,7 +89,7 @@ class ChatConversationsController extends Controller
                         JOIN chat_participations cp5 ON cmp5.id_chat_participation = cp5.id_chat_participation 
                         JOIN chat_conversations cc5 ON cc5.id_chat_conversation = cp5.id_chat_conversation 
                         WHERE cc5.id_chat_conversation = cc.id_chat_conversation 
-                        AND cmp5.deleted_at = null
+                        AND cmp5.deleted_at IS NULL
                         ORDER BY cmp5.created_at DESC 
                         LIMIT 1
                     ) AS last_message
@@ -99,7 +101,7 @@ class ChatConversationsController extends Controller
                         JOIN chat_participations cp6 ON cmp6.id_chat_participation = cp6.id_chat_participation 
                         JOIN chat_conversations cc6 ON cc6.id_chat_conversation = cp6.id_chat_conversation 
                         WHERE cc6.id_chat_conversation = cc.id_chat_conversation 
-                        AND cmp6.deleted_at = null
+                        AND cmp6.deleted_at IS NULL
                         ORDER BY cmp6.created_at DESC 
                         LIMIT 1
                     ) AS last_message_date
@@ -127,33 +129,34 @@ class ChatConversationsController extends Controller
             return responseJSON(null, 401, $e->getMessage());
         }
         $email = $payload->authenticated_user->email;
-        $userId = Person::where('email', $email)->first()->value('id');
+        $userId = (Person::where('email', $email)->first())->id;
         $users = [];        
-        
         foreach ($request->users as $user) {
             array_push($users,$user);
         }
         $length = count($users);
-        $type=2;
-        $name="";
+        $typeChatConversation=2;
+        $nameChat="";
         $crear_nuevo=true;
         $chat_conversation_id=null;
-        if($length>2){
-            $name=(string)$request->name;
-            $type=2;
+        if($length>1){
+            $nameChat=(string)$request->name;
+            $typeChatConversation=1;
         }else{
-            $name="";
-            $type=1;
+            $user = Person::where('id', $users[0])->first();
+            $nameChat=$user->name." ".$user->lastname;
+            $typeChatConversation=2;
             $result = DB::table('chat_conversations AS cc')
             ->join('chat_participations AS cp', 'cp.id_chat_conversation', '=', 'cc.id_chat_conversation')
             ->join('people AS u', 'u.id', '=', 'cp.id_user')
             ->select('cp.id_chat_conversation', DB::raw('GROUP_CONCAT(u.id) AS users_ids'))
+            ->whereNull('cc.deleted_at')
             ->groupBy('cp.id_chat_conversation')
             ->havingRaw('COUNT(cp.id_chat_participation) = 2')
             ->get();
             foreach ($result as $r) {
                 $arrayResultante = array_map('trim', explode(',', $r->users_ids));
-                if (in_array($users[0], $arrayResultante) && in_array($users[1], $arrayResultante)) {
+                if (in_array($users[0], $arrayResultante) && in_array($userId, $arrayResultante)) {
                     $crear_nuevo=false;
                     $chat_conversation_id = $r->id_chat_conversation;
                 } 
@@ -161,19 +164,19 @@ class ChatConversationsController extends Controller
 
         }
         if($crear_nuevo){
-                       
             $chat_conversation_id = DB::table('chat_conversations')->insertGetId([
-                'name' => $name,
-                'id_type_chat_conversations' => $type,
+                'name' => $nameChat,
+                'id_type_chat_conversations' => $typeChatConversation,
             ]);
             $chat_participation_creator=['id_user' => $userId, 'id_chat_conversation' => $chat_conversation_id,'id_type_chat_participations'=>1];
             DB::table('chat_participations')->insert($chat_participation_creator);
 
-            $chat_participations = [];
+            $chat_participations_participants = [];
             foreach ($users as $user) {
-                array_push($chat_participations,['id_user' => $user, 'id_chat_conversation' => $chat_conversation_id,'id_type_chat_participations'=>2]);
+                MensajesSinLeer::dispatch((string)$user);
+                array_push($chat_participations_participants,['id_user' => $user, 'id_chat_conversation' => $chat_conversation_id,'id_type_chat_participations'=>2]);
             }
-            DB::table('chat_participations')->insert($chat_participations);
+            DB::table('chat_participations')->insert($chat_participations_participants);
         }
         return responseJSON($chat_conversation_id, 200, 'ChatConversations fetched successfully.');
     }

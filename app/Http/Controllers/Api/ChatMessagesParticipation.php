@@ -26,7 +26,7 @@ class ChatMessagesParticipation extends Controller
             return responseJSON(null, 401, $e->getMessage());
         }
         $email = $payload->authenticated_user->email;
-        $userId = Person::where('email', $email)->first()->value('id');
+        $userId = (Person::where('email', $email)->first())->id;
 
         $results = DB::table('chat_mensages_participation as cmp')
         ->select('cmp.id_chat_mensages_participation', 'cmp.read_message_participants')
@@ -52,7 +52,7 @@ class ChatMessagesParticipation extends Controller
     {
         $id_chat_conversation = $chat;
         $results = DB::table('chat_mensages_participation as cmp')
-        ->select('cmp.id_chat_mensages_participation as id','cmp.content', 'cmp.created_at', 'u.id as owner_id','u.email as owner_email')
+        ->select('cmp.id_chat_mensages_participation as id','cmp.content', 'cmp.created_at', 'u.id as owner_id','u.email as owner_email','u.photo as owner_photo')
         ->join('chat_participations as cp', 'cp.id_chat_participation', '=', 'cmp.id_chat_participation')
         ->join('people as u', 'cp.id_user', '=', 'u.id')
         ->join('chat_conversations as cc', 'cc.id_chat_conversation', '=', 'cp.id_chat_conversation')
@@ -74,7 +74,7 @@ class ChatMessagesParticipation extends Controller
             return responseJSON(null, 401, $e->getMessage());
         }
         $email = $payload->authenticated_user->email;
-        $userId = Person::where('email', $email)->first()->value('id');
+        $userId = (Person::where('email', $email)->first())->id;
 
         $id_chat_participation = DB::table('chat_participations as cp')
         ->select('cp.id_chat_participation')

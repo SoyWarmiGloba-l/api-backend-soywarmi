@@ -25,7 +25,7 @@ class NotificationController extends Controller
             return responseJSON(null, 401, $e->getMessage());
         }
         $email = $payload->authenticated_user->email;
-        $userId = Person::where('email', $email)->first()->value('id');
+        $userId = (Person::where('email', $email)->first())->id;
 
         return responseJSON(PeopleNotifications::with('notifications')->where('id_people', $userId)->get(),200,'Notifications obtained');
     }
@@ -35,7 +35,7 @@ class NotificationController extends Controller
             $token = new FirebaseToken($request->bearerToken());
             $payload = $token->verify_other(config('services.firebase.project_id'));
             $email = $payload->authenticated_user->email;
-            $userId = Person::where('email', $email)->first()->value('id');
+            $userId = (Person::where('email', $email)->first())->id;
             $peopleNotifications = PeopleNotifications::where('id_people', $userId)->where('id_notifications', $notification->id)->first();
             $peopleNotifications->delete();
             RegistroNotificacion::dispatch((string)($userId));

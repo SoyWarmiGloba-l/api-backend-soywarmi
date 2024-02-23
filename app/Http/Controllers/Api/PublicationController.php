@@ -24,6 +24,10 @@ class PublicationController extends Controller
     {
         return responseJSON(Publication::with('comments', 'person')->get(), 200, 'Publications retrieved successfully');
     }
+     public function getAllOrderDescByCreatedAt()
+    {
+        return responseJSON( Publication::with(['comments', 'person'])->orderBy('created_at', 'desc')->get(), 200, 'Publications retrieved successfully');
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -53,7 +57,7 @@ class PublicationController extends Controller
         }
         $fecha_actual_gmt_4 = Carbon::now('GMT-4')->toDateTimeString();
         $email = $payload->authenticated_user->email;
-        $userId = Person::where('email', $email)->first()->value('id');
+        $userId = (Person::where('email', $email)->first())->id;
         $res=Publication::create([
             'person_id' => $userId,
             'title' => json_decode($request->data,true)["title"],

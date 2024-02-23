@@ -117,8 +117,14 @@ Route::group([
     Route::get('comments/publication/{publicationId}', [CommentController::class, 'getCommentsByPublication']);
     Route::get('notifications/my-notifications-not-read', [NotificationController::class, 'showMyNotificationsNotRead']);
     Route::delete('delete_my_notification/{notification}',[NotificationController::class, 'deleteNotificationOfMyListNotificacion']);
-});
+    Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+    Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
+    Route::get('/recent_publications', [PublicationController::class, 'getAllOrderDescByCreatedAt']);
 
+});
+Route::get('/verify_connection', function () {
+    return response()->json(['message' => 'Conexión exitosa']);
+});
 
 // Route::post('post_1', [MensajesAuxController::class, 'save']);
 // Route::get('get_1', [MensajesAuxController::class, 'get_1']);
@@ -138,12 +144,12 @@ Route::group([
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
 });
-Route::middleware('auth:api')->prefix('v1')->group(
-    function () {
-        Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail']);
-        Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
-    }
-);
+// Route::middleware('auth:api')->prefix('v1')->group(
+//     function () {
+//         Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+//         Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
+//     }
+// );
 
 
 Route::get('routes', function () {

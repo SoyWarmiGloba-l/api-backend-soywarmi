@@ -63,7 +63,7 @@ class AuthController extends Controller
         }
         $email = $payload->authenticated_user->email;
         $user = Person::where('email', $email)->first();
-        if($user){
+        if($user==null){
             $phone=70000000;
             $user = Person::create([
                 'role_id' => 3,
@@ -73,7 +73,8 @@ class AuthController extends Controller
                 'email' => (string)$payload->authenticated_user->email,
                 'password' => Hash::make($request->password),
                 'birthday' => "1995-12-04",
-                'phone' => $phone
+                'phone' => $phone,
+                'photo'=>""
             ]);
         }
         return responseJSON($user, 200, 'Success');
