@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Person;
 
+//use Kreait\Firebase\Auth;
+
+
 class AuthController extends Controller
 {
     /**
@@ -78,6 +81,12 @@ class AuthController extends Controller
             ]);
         }
         return responseJSON($user, 200, 'Success');
+    }
+    public function paswordRecoveryFirebase(Request $request){
+        $email = $request->email;
+        $auth = app('firebase.auth');
+        $link = $auth->sendPasswordResetLink($email);
+        return responseJSON($email, 200, 'Success');
     }
     /**
      * Get the authenticated User.
